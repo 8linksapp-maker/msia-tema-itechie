@@ -50,11 +50,10 @@ const img3 = skillArea.image3 || "/itechie-assets/img/other/6.webp";
                 height={350} 
                 widths={[300, 570]} 
                 sizes="(max-width: 768px) 100vw, 570px" 
-                loading="eager" 
-                decoding="sync" 
-                fetchpriority="high"
+                loading="lazy" 
+                decoding="async" 
                 style="border-radius: 5px; object-fit: cover;" 
-                quality={50} 
+                quality={40} 
                 format="webp" 
               />
             </div>
