@@ -1,5 +1,5 @@
 {
-    "version": "1.0.6",
+    "version": "1.0.8",
     "files": [
         "src/components/admin/ConfigEditor.tsx",
         "src/data/version.json"
