@@ -5,14 +5,11 @@ const homeData = readData('home.json');
 const skillArea = homeData?.skillArea || { title: "Bringing new it business solutions and ideas", subtitle: "Professional Skill", description: "Maecenas tempus, tellus eget condime...", skills: [] };
 const skills = skillArea.skills;
 
-const rawImg1 = skillArea.image1 || "/itechie-assets/img/other/4.webp";
-const img1 = rawImg1.startsWith('http') ? rawImg1 : Astro.url.origin + rawImg1;
+const img1 = skillArea.image1 || "/itechie-assets/img/other/4.webp";
 
-const rawImg2 = skillArea.image2 || "/itechie-assets/img/other/5.webp";
-const img2 = rawImg2.startsWith('http') ? rawImg2 : Astro.url.origin + rawImg2;
+const img2 = skillArea.image2 || "/itechie-assets/img/other/5.webp";
 
-const rawImg3 = skillArea.image3 || "/itechie-assets/img/other/6.webp";
-const img3 = rawImg3.startsWith('http') ? rawImg3 : Astro.url.origin + rawImg3;
+const img3 = skillArea.image3 || "/itechie-assets/img/other/6.webp";
 ---
 
 <div class="skill-area bg-relative pd-top-120 pd-bottom-120">

@@ -4,10 +4,8 @@ import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const about = homeData?.about || {};
 
-const rawImg1 = about.image1 || "/itechie-assets/img/about/3.webp";
-const img1 = rawImg1.startsWith('http') ? rawImg1 : Astro.url.origin + rawImg1;
-const rawImg2 = about.image2 || "/itechie-assets/img/about/4.webp";
-const img2 = rawImg2.startsWith('http') ? rawImg2 : Astro.url.origin + rawImg2;
+const img1 = about.image1 || "/itechie-assets/img/about/3.webp";
+const img2 = about.image2 || "/itechie-assets/img/about/4.webp";
 ---
 <div class="about-area pd-top-90 pd-bottom-120">
   <div class="container">

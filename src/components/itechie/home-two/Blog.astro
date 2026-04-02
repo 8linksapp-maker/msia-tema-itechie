@@ -33,7 +33,7 @@ function formatDate(date: Date) {
           <div class="single-blog-inner style-2">
             <div class="thumb">
               <Image 
-                src={post.data.heroImage?.startsWith('http') ? post.data.heroImage : Astro.url.origin + (post.data.heroImage || '/itechie-assets/img/blog/1.webp')} 
+                src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} 
                 alt={post.data.title} 
                 inferSize={true}
                 widths={[360, 768]}

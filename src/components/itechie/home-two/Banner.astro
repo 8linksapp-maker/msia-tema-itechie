@@ -4,8 +4,7 @@ import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const hero = homeData?.hero || {};
 
-const rawBgUrl = hero.backgroundImage || "/itechie-assets/img/banner/bg-real.webp";
-const bgUrl = rawBgUrl.startsWith('http') ? rawBgUrl : Astro.url.origin + rawBgUrl;
+const bgUrl = hero.backgroundImage || "/itechie-assets/img/banner/bg-real.webp";
 ---
 <div class="banner-area banner-area-2 bg-relative" style="min-height: 800px; display: flex; align-items: center; background-color: #0b0d26;">
   <Image 
