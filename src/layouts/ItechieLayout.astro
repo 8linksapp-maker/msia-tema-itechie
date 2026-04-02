@@ -67,20 +67,40 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
   <!-- Preloads -->
   <link rel="preload" as="image" href={heroImage} fetchpriority="high" />
 
-  <!-- Google Fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" />
-
-  <!-- CSS Assets -->
-  <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/animate.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/fontawesome.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/custom-icon.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/nice-select.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/magnific.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/slick.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/owl.min.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/style.css" />
-  <link rel="stylesheet" href="/itechie-assets/css/responsive.css" />
+  <!-- Google Fonts otimizadas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  
+  <!-- CSS Assets (Deferred for PageSpeed) -->
+  <link rel="preload" href="/itechie-assets/css/bootstrap.min.css" as="style" />
+  <link rel="preload" href="/itechie-assets/css/style.css" as="style" />
+  <link rel="preload" href="/itechie-assets/css/responsive.css" as="style" />
+  
+  <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/animate.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/fontawesome.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/custom-icon.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/nice-select.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/magnific.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/slick.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/owl.min.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/style.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/itechie-assets/css/responsive.css" media="print" onload="this.media='all'" />
+  
+  <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/animate.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/fontawesome.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/custom-icon.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/nice-select.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/magnific.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/slick.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/owl.min.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/style.css" />
+      <link rel="stylesheet" href="/itechie-assets/css/responsive.css" />
+  </noscript>
 
   <style is:global define:vars={{ 
     primaryColor: theme?.primary || '#2e38dc',

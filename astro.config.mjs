@@ -6,6 +6,9 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
     output: 'static',
     adapter: vercel(),
+    image: {
+        remotePatterns: [{ protocol: 'https' }],
+    },
     integrations: [
         react(),
         tailwind({ applyBaseStyles: false }),

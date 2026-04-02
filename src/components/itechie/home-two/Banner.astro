@@ -1,17 +1,35 @@
 ---
+import { Image } from 'astro:assets';
 import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const hero = homeData?.hero || {};
+
+const bgUrl = hero.backgroundImage || "/itechie-assets/img/banner/bg-real.webp";
+const isRemote = bgUrl.startsWith('http');
 ---
 <div class="banner-area banner-area-2 bg-relative" style="min-height: 800px; display: flex; align-items: center; background-color: #0b0d26;">
-  <img 
-    src={hero.backgroundImage || "/itechie-assets/img/banner/bg-real.png"} 
-    alt="ITECHIE Banner" 
-    class="hero-bg-img"
-    fetchpriority="high"
-    loading="eager"
-    decoding="async"
-  />
+  {isRemote ? (
+    <Image 
+      src={bgUrl} 
+      alt="ITECHIE Banner" 
+      class="hero-bg-img"
+      fetchpriority="high"
+      loading="eager"
+      decoding="sync"
+      inferSize={true}
+    />
+  ) : (
+    <img 
+      src={bgUrl} 
+      alt="ITECHIE Banner" 
+      class="hero-bg-img"
+      fetchpriority="high"
+      loading="eager"
+      decoding="sync"
+      width="1920"
+      height="1080"
+    />
+  )}
   <div class="bg-overlay-gradient" style="opacity: 0.6;"></div>
   <div class="container">
     <div class="row">
