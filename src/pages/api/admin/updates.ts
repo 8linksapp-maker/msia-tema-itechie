@@ -165,11 +165,14 @@ export const POST: APIRoute = async ({ request }) => {
             return new Response(JSON.stringify({ error: 'Manifesto vazio — nenhum arquivo para atualizar' }), { status: 400 });
         }
 
-        // Filtra arquivos protegidos (dados do usuário)
+        // Filtra arquivos protegidos (dados do usuário), exceto o version.json
         const PROTECTED = ['src/data/', 'src/content/'];
-        // pluginsConfig.json é sempre protegido (configurações dos plugins)
-        const safeFiles = files.filter(f => !PROTECTED.some(p => f.startsWith(p)));
-        const skipped = files.filter(f => PROTECTED.some(p => f.startsWith(p)));
+        const safeFiles = files.filter(f =>
+            f === 'src/data/version.json' || !PROTECTED.some(p => f.startsWith(p))
+        );
+        const skipped = files.filter(f =>
+            f !== 'src/data/version.json' && PROTECTED.some(p => f.startsWith(p))
+        );
 
         const results: { file: string; status: 'ok' | 'error'; error?: string }[] = [];
 
