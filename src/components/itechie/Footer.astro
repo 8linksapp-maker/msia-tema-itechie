@@ -65,7 +65,7 @@ function formatDate(date: Date) {
               <li class={index > 0 ? "mt-3" : ""}>
                 <div class="media">
                   <div class="media-left">
-                    <img src={post.data.heroImage || "/itechie-assets/img/blog/1.webp"} alt={post.data.title} style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;" />
+                    <img src={post.data.heroImage || "/itechie-assets/img/blog/1.webp"} alt={post.data.title} width="60" height="60" loading="lazy" decoding="async" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;" />
                   </div>
                   <div class="media-body align-self-center">
                     <h6 class="title"><a href={`/blog/${post.slug}`}>{post.data.title}</a></h6>
