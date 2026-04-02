@@ -17,6 +17,8 @@ const isRemote = bgUrl.startsWith('http');
       loading="eager"
       decoding="sync"
       inferSize={true}
+      widths={[360, 768, 1920]}
+      sizes="(max-width: 768px) 360px, (max-width: 992px) 768px, 1920px"
     />
   ) : (
     <img 
