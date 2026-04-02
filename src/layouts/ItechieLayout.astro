@@ -68,17 +68,17 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
   <link rel="preload" as="image" href={heroImage} fetchpriority="high" />
 
   <!-- Google Fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Rubik:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" />
 
   <!-- CSS Assets -->
   <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" />
-  <link rel="preload" href="/itechie-assets/css/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/fontawesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/custom-icon.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/nice-select.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/magnific.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/slick.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <link rel="preload" href="/itechie-assets/css/owl.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <link rel="stylesheet" href="/itechie-assets/css/animate.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/custom-icon.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/nice-select.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/magnific.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/slick.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/owl.min.css" />
   <link rel="stylesheet" href="/itechie-assets/css/style.css" />
   <link rel="stylesheet" href="/itechie-assets/css/responsive.css" />
 
@@ -95,6 +95,18 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
     mainHue: mainHue,
     shapeFilter: shapeFilter
   }}>
+    /* Critical CSS for LCP */
+    .banner-area { position: relative; background-size: cover; background-position: center; }
+    .banner-inner { position: relative; z-index: 5; }
+    .banner-inner .title { font-size: 78px; line-height: 1.05; font-weight: 700; color: #fff; font-family: 'Rajdhani', sans-serif; }
+    .banner-area-2 { padding: 250px 0 250px 0; }
+    .navbar-area { position: absolute; width: 100%; z-index: 99; padding: 0; }
+    @media only screen and (max-width: 991px) {
+      .banner-inner .title { font-size: 42px; line-height: 1.2; }
+      .banner-area-2 { padding: 160px 0 100px 0; }
+      .navbar-area { background: #fff; }
+    }
+
     :root {
       --main-color: var(--primaryColor);
       --main-color-rgb: var(--primaryRgb);
