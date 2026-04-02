@@ -1,0 +1,8 @@
+{
+    "version": "1.0.5",
+    "files": [
+        "src/components/admin/ConfigEditor.tsx",
+        "src/data/version.json"
+    ],
+    "note": "Nova paleta de cores Sunset Orange adicionada ao painel de configurações!"
+}

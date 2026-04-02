@@ -47,6 +47,7 @@ export default function ConfigEditor() {
         { name: 'Eco Growth', primary: '#10b981', secondary: '#064e3b', accent: '#84cc16', bgDark: '#064e3b', bgLight: '#f0fdf4', textOnPrimary: '#ffffff' },
         { name: 'Premium Gold', primary: '#d4af37', secondary: '#1a1a1a', accent: '#ffffff', bgDark: '#000000', bgLight: '#fcfcfc', textOnPrimary: '#000000' },
         { name: 'Midnight Blue', primary: '#1e40af', secondary: '#1e1b4b', accent: '#38bdf8', bgDark: '#0f172a', bgLight: '#eff6ff', textOnPrimary: '#ffffff' },
+        { name: 'Sunset Orange', primary: '#f97316', secondary: '#431407', accent: '#fca5a5', bgDark: '#431407', bgLight: '#fff7ed', textOnPrimary: '#ffffff' },
     ];
 
     return (
