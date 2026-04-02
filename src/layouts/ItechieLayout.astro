@@ -60,7 +60,7 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{formattedTitle}</title>
   <meta name="description" content={description}>
-  <link rel="icon" type="image/webp" href="/favicon.webp" />
+  <link rel="icon" type="image/webp" href={siteConfig.favicon || siteConfig.logo || "/favicon.webp"} />
   
   <!-- Preload LCP (Banner Image) - Usando o caminho fixo que o Astro otimiza -->
   <link rel="preload" as="image" href="/itechie-assets/img/banner/bg-real.webp" fetchpriority="high" />
