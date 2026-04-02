@@ -5,14 +5,14 @@ const homeData = readData('home.json');
 const skillArea = homeData?.skillArea || { title: "Bringing new it business solutions and ideas", subtitle: "Professional Skill", description: "Maecenas tempus, tellus eget condime...", skills: [] };
 const skills = skillArea.skills;
 
-const img1 = skillArea.image1 || "/itechie-assets/img/other/4.webp";
-const img1IsRemote = img1.startsWith('http');
+const rawImg1 = skillArea.image1 || "/itechie-assets/img/other/4.webp";
+const img1 = rawImg1.startsWith('http') ? rawImg1 : Astro.url.origin + rawImg1;
 
-const img2 = skillArea.image2 || "/itechie-assets/img/other/5.webp";
-const img2IsRemote = img2.startsWith('http');
+const rawImg2 = skillArea.image2 || "/itechie-assets/img/other/5.webp";
+const img2 = rawImg2.startsWith('http') ? rawImg2 : Astro.url.origin + rawImg2;
 
-const img3 = skillArea.image3 || "/itechie-assets/img/other/6.webp";
-const img3IsRemote = img3.startsWith('http');
+const rawImg3 = skillArea.image3 || "/itechie-assets/img/other/6.webp";
+const img3 = rawImg3.startsWith('http') ? rawImg3 : Astro.url.origin + rawImg3;
 ---
 
 <div class="skill-area bg-relative pd-top-120 pd-bottom-120">
@@ -45,29 +45,17 @@ const img3IsRemote = img3.startsWith('http');
         <div class="row">
           <div class="col-lg-12">
             <div class="thumb border-radius-5 mb-4 image-hover-animate">
-              {img1IsRemote ? (
-                <Image src={img1} alt="Skill Image 1" class="w-100" inferSize={true} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              ) : (
-                <img src={img1} alt="Skill Image 1" class="w-100" width="570" height="350" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              )}
+              <Image src={img1} alt="Skill Image 1" class="w-100" inferSize={true} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
             </div>
           </div>
           <div class="col-md-6">
             <div class="thumb border-radius-5 image-hover-animate mb-3 mb-md-0">
-              {img2IsRemote ? (
                  <Image src={img2} alt="Skill Image 2" class="w-100" inferSize={true} widths={[135, 270]} sizes="(max-width: 768px) 50vw, 270px" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              ) : (
-                 <img src={img2} alt="Skill Image 2" class="w-100" width="270" height="200" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              )}
             </div>
           </div>
           <div class="col-md-6">
             <div class="thumb border-radius-5 image-hover-animate">
-              {img3IsRemote ? (
                  <Image src={img3} alt="Skill Image 3" class="w-100" inferSize={true} widths={[135, 270]} sizes="(max-width: 768px) 50vw, 270px" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              ) : (
-                 <img src={img3} alt="Skill Image 3" class="w-100" width="270" height="200" loading="lazy" decoding="async" style="border-radius: 5px; object-fit: cover;" />
-              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const blogArea = homeData?.latestPosts || { limit: 3, btnText: "Ver Todos", btnLink: "/blog" };
@@ -31,7 +32,13 @@ function formatDate(date: Date) {
         <div class="col-lg-4 col-md-6">
           <div class="single-blog-inner style-2">
             <div class="thumb">
-              <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={post.data.title} />
+              <Image 
+                src={post.data.heroImage?.startsWith('http') ? post.data.heroImage : Astro.url.origin + (post.data.heroImage || '/itechie-assets/img/blog/1.webp')} 
+                alt={post.data.title} 
+                inferSize={true}
+                widths={[360, 768]}
+                sizes="(max-width: 768px) 100vw, 360px"
+              />
             </div>
             <div class="details">
               <h4><a href={`/blog/${post.slug}`}>{post.data.title}</a></h4>

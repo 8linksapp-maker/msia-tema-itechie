@@ -4,27 +4,19 @@ import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const about = homeData?.about || {};
 
-const img1 = about.image1 || "/itechie-assets/img/about/3.webp";
-const img1IsRemote = img1.startsWith('http');
-const img2 = about.image2 || "/itechie-assets/img/about/4.webp";
-const img2IsRemote = img2.startsWith('http');
+const rawImg1 = about.image1 || "/itechie-assets/img/about/3.webp";
+const img1 = rawImg1.startsWith('http') ? rawImg1 : Astro.url.origin + rawImg1;
+const rawImg2 = about.image2 || "/itechie-assets/img/about/4.webp";
+const img2 = rawImg2.startsWith('http') ? rawImg2 : Astro.url.origin + rawImg2;
 ---
 <div class="about-area pd-top-90 pd-bottom-120">
   <div class="container">
     <div class="row">
       <div class="col-lg-6 mb-5 mb-lg-0">
         <div class="about-thumb-inner pr-lg-5 position-relative">
-          {img1IsRemote ? (
-            <Image class="main-img w-100" src={img1} alt="Sobre Nós" inferSize={true} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 10px; object-fit: cover;" />
-          ) : (
-             <img class="main-img w-100" src={img1} alt="Sobre Nós" width="570" height="400" loading="lazy" decoding="async" style="border-radius: 10px; object-fit: cover;" />
-          )}
+          <Image class="main-img w-100" src={img1} alt="Sobre Nós" inferSize={true} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 10px; object-fit: cover;" />
           
-          {img2IsRemote ? (
-             <Image class="main-img-2 d-none d-md-block" src={img2} alt="Sobre Nós 2" inferSize={true} widths={[150, 300]} sizes="300px" loading="lazy" decoding="async" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%; object-fit: cover;" />
-          ) : (
-             <img class="main-img-2 d-none d-md-block" src={img2} alt="Sobre Nós 2" width="300" height="250" loading="lazy" decoding="async" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%; object-fit: cover;" />
-          )}
+          <Image class="main-img-2 d-none d-md-block" src={img2} alt="Sobre Nós 2" inferSize={true} widths={[150, 300]} sizes="300px" loading="lazy" decoding="async" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%; object-fit: cover;" />
           
           <div class="experience-badge shadow" style="position: absolute; top: 30px; left: -20px; background: var(--main-color); color: #fff; padding: 30px 20px; text-align: center; border-radius: 10px;">
              <h2 style="color: #fff !important; margin: 0; font-size: 40px; font-weight: 800;">{about.experienceYears || 15}+</h2>
