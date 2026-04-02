@@ -67,19 +67,58 @@ const allServices = servicosData?.serviceArea?.items || [];
   <nav class="navbar navbar-area navbar-area-2 navbar-expand-lg bg-main-base" id="itechie-navbar">
     <div class="container nav-container">
 <!-- Mobile menu removed to fix stray T -->
-      <!-- Mobile Menu Toggle -->
-      <button class="navbar-toggler d-lg-none" type="button" id="mobile-menu-toggle">
-        <span class="navbar-toggler-icon"><i class="fa fa-bars text-white"></i></span>
-      </button>
+      <!-- Modern Mobile Menu Toggle -->
+      <div class="mobile-toggle-wrapper d-lg-none">
+        <button class="hamburger-menu" id="mobile-menu-btn" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
 
-      <div class="logo d-inline-block d-lg-none text-center flex-grow-1">
+      <div class="logo text-center flex-grow-1 d-lg-none">
         <a href="/">
           {siteConfig.logo ? (
-            <img src={siteConfig.logo} alt={siteConfig.name} />
+            <img src={siteConfig.logo} alt={siteConfig.name} style="max-height: 40px;" />
           ) : (
-            <span class="text-logo">{siteConfig.name}</span>
+            <span class="text-logo" style="font-size: 20px;">{siteConfig.name}</span>
           )}
         </a>
+      </div>
+
+      <!-- Mobile Menu Overlay -->
+      <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+        <div class="mobile-menu-content">
+          <ul class="mobile-nav-list">
+            {menuItems && menuItems.map((item: any) => {
+              const hasSubmenu = (item.items && item.items.length > 0) || (item.showCategories && allCategories.length > 0) || (item.showServices && allServices.length > 0);
+              return (
+                <li class={hasSubmenu ? "has-dropdown" : ""}>
+                  <div class="menu-item-row">
+                    <a href={item.href}>{item.label}</a>
+                    {hasSubmenu && <i class="fas fa-chevron-down toggle-dropdown"></i>}
+                  </div>
+                  {hasSubmenu && (
+                    <ul class="mobile-dropdown">
+                      {item.items?.map((subItem: any) => (
+                        <li><a href={subItem.href}>{subItem.label}</a></li>
+                      ))}
+                      {item.showCategories && allCategories.map((cat: any) => (
+                          <li><a href={`/categoria/${slugify(cat)}`}>{cat}</a></li>
+                      ))}
+                      {item.showServices && allServices.map((service: any) => (
+                        <li><a href={`/servico/${service.slug}`}>{service.title}</a></li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <div class="mobile-menu-footer mt-5 text-center">
+            <a class="it-btn btn-base w-100" href={siteConfig.header?.ctaLink || "/contato"}>{siteConfig.header?.ctaText || "Começar Agora"}</a>
+          </div>
+        </div>
       </div>
 
       <div class="collapse navbar-collapse" id="itechie_main_menu">
@@ -116,8 +155,9 @@ const allServices = servicosData?.serviceArea?.items || [];
 
 <script is:inline>
   const navbar = document.getElementById('itechie-navbar');
-  const toggleBtn = document.getElementById('mobile-menu-toggle');
-  const menuCollapse = document.getElementById('itechie_main_menu');
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  const dropdownToggles = document.querySelectorAll('.toggle-dropdown');
 
   window.addEventListener('scroll', () => {
     if (window.scrollY > 100) {
@@ -127,11 +167,23 @@ const allServices = servicosData?.serviceArea?.items || [];
     }
   });
 
-  if (toggleBtn && menuCollapse) {
-    toggleBtn.addEventListener('click', () => {
-      menuCollapse.classList.toggle('show');
+  if (menuBtn && overlay) {
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      overlay.classList.toggle('active');
+      document.body.classList.toggle('no-scroll');
     });
   }
+
+  // Accordion Logic for Mobile
+  dropdownToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      const parent = toggle.closest('li');
+      const dropdown = parent.querySelector('.mobile-dropdown');
+      dropdown.classList.toggle('active');
+      toggle.classList.toggle('active');
+    });
+  });
 </script>
 
 <style>
@@ -303,49 +355,105 @@ const allServices = servicosData?.serviceArea?.items || [];
     height: 80px;
   }
 
+  /* MODERN MOBILE MENU REDESIGN */
   @media (max-width: 991px) {
-    .navbar-collapse {
-      position: absolute;
-      top: 100%;
+    .nav-container { padding: 0 15px !important; }
+    .navbar-collapse { display: none !important; }
+    
+    .hamburger-menu {
+      background: transparent;
+      border: none;
+      width: 40px;
+      height: 40px;
+      position: relative;
+      z-index: 1001;
+      cursor: pointer;
+      padding: 0;
+    }
+    .hamburger-menu span {
+      display: block;
+      width: 25px;
+      height: 2px;
+      background: #fff;
+      margin: 6px auto;
+      transition: 0.3s;
+    }
+    .hamburger-menu.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .hamburger-menu.active span:nth-child(2) { opacity: 0; }
+    .hamburger-menu.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      top: 0;
       left: 0;
       width: 100%;
-      background: var(--bg-dark);
+      height: 100vh;
+      background: rgba(11, 13, 38, 0.95);
+      backdrop-filter: blur(10px);
       z-index: 1000;
-      padding: 20px;
-      display: none;
-      flex-direction: column !important;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .mobile-menu-content {
+      width: 90%;
       max-height: 80vh;
       overflow-y: auto;
     }
-    .navbar-collapse.show {
-      display: flex !important;
+    .mobile-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
-    .navbar-nav {
-      flex-direction: column !important;
-      height: auto !important;
-      align-items: flex-start !important;
+    .mobile-nav-list li {
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 15px;
     }
-    .navbar-nav li {
-      width: 100%;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      height: auto !important;
-      padding: 10px 0;
+    .menu-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .navbar-nav li a {
-      padding: 10px 0 !important;
-      font-size: 16px !important;
-    }
-    .nav-right-part-desktop {
-      display: none !important;
-    }
-    .navbar-toggler {
-      border: none;
+    .mobile-nav-list li a {
+      color: #fff;
       font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .toggle-dropdown {
+      color: #fff;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+    .toggle-dropdown.active { transform: rotate(180deg); }
+    
+    .mobile-dropdown {
+      list-style: none;
+      padding-left: 20px;
+      margin-top: 15px;
+      display: none;
+    }
+    .mobile-dropdown.active { display: block; }
+    .mobile-dropdown li {
+      margin-bottom: 10px;
+      border: none;
       padding: 0;
     }
-    .nav-container {
-        justify-content: space-between;
+    .mobile-dropdown li a {
+      font-size: 18px;
+      font-weight: 500;
+      opacity: 0.8;
     }
+    
+    .no-scroll { overflow: hidden; }
   }
 
   .sticky-active {
