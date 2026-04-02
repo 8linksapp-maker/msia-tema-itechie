@@ -88,15 +88,27 @@ export const GET: APIRoute = async ({ request }) => {
             release = await res.json();
             latestVersion = release.tag_name?.replace(/^v/, '') || '0.0.0';
         } else {
-            // Fallback: se não houver Releases, busca por Tags (mais comum em automações simples)
-            const tagsRes = await fetch(`https://api.github.com/repos/${TEMPLATE_REPO}/tags`, {
-                headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'walker-cms' },
-            });
             if (tagsRes.ok) {
                 const tags = await tagsRes.json();
                 if (tags && tags.length > 0) {
-                    latestVersion = tags[0].name.replace(/^v/, '');
-                    release = { tag_name: tags[0].name, name: `Atualização ${tags[0].name}`, body: 'Nova versão disponível via tags.' };
+                    const tag = tags[0].name;
+                    latestVersion = tag.replace(/^v/, '');
+
+                    // Tenta buscar as notas do update-manifest.json
+                    let notes = 'Nova versão disponível via tags.';
+                    try {
+                        const manifestRes = await fetch(`https://raw.githubusercontent.com/${TEMPLATE_REPO}/${tag}/update-manifest.json`);
+                        if (manifestRes.ok) {
+                            const manifest = await manifestRes.json();
+                            if (manifest.note) notes = manifest.note;
+                        }
+                    } catch { }
+
+                    release = {
+                        tag_name: tag,
+                        name: `Atualização ${tag}`,
+                        body: notes
+                    };
                 }
             }
         }
