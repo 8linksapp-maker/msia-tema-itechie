@@ -88,6 +88,10 @@ export const GET: APIRoute = async ({ request }) => {
             release = await res.json();
             latestVersion = release.tag_name?.replace(/^v/, '') || '0.0.0';
         } else {
+            // Fallback: se não houver Releases, busca por Tags (mais comum em automações simples)
+            const tagsRes = await fetch(`https://api.github.com/repos/${TEMPLATE_REPO}/tags`, {
+                headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'walker-cms' },
+            });
             if (tagsRes.ok) {
                 const tags = await tagsRes.json();
                 if (tags && tags.length > 0) {
