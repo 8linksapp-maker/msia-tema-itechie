@@ -186,6 +186,18 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
   </style>
   <style is:global>
     /* REMOVER O "T" FANTASMA QUE APARECE NO MENU */
+    .navbar-nav li:before,
+    .navbar-nav li:after,
+    .navbar-nav li a:before,
+    .navbar-nav li a:after,
+    .navbar-area .nav-container .navbar-collapse .navbar-nav li:after,
+    .navbar-area-2 .navbar-nav li:after {
+      content: none !important;
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
 
     /* AJUSTES DE RESPONSIVIDADE GLOBAL */
     @media (max-width: 768px) {

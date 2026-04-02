@@ -17,8 +17,8 @@ const allServices = servicosData?.serviceArea?.items || [];
 <header>
   <div class="navbar-top style-2">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-3 d-lg-inline-block d-none">
+      <div class="row align-items-center">
+        <div class="col-lg-3 d-lg-inline-block d-none ps-0">
           <div class="logo">
             <a href="/">
               {siteConfig.logo ? (
@@ -29,30 +29,26 @@ const allServices = servicosData?.serviceArea?.items || [];
             </a>
           </div>
         </div>
-        <div class="col-lg-3 col-md-5 align-self-center">
-          <div class="media">
-            <div class="media-left">
+        <div class="col-lg-9 d-lg-flex d-none justify-content-end align-items-center pe-0">
+          <div class="media d-flex align-items-center me-4">
+            <div class="media-left me-3">
               <i class="far fa-clock"></i>
             </div>
             <div class="media-body">
-              <h6>Horário de Atendimento</h6>
-              <p>{siteConfig.header?.businessHours || 'Seg - Sex || 08:00 - 18:00'}</p>
+              <h6 class="mb-0">Horário de Atendimento</h6>
+              <p class="mb-0">{siteConfig.header?.businessHours || 'Seg - Sex || 08:00 - 18:00'}</p>
             </div>
           </div>
-        </div>
-        <div class="col-lg-3 col-md-5 align-self-center">
-          <div class="media">
-            <div class="media-left">
+          <div class="media d-flex align-items-center me-4">
+            <div class="media-left me-3">
               <i class="far fa-envelope"></i>
             </div>
             <div class="media-body">
-              <h6>E-mail de Contato</h6>
-              <p>{siteConfig.contact?.email || 'info@itechie.com'}</p>
+              <h6 class="mb-0">E-mail de Contato</h6>
+              <p class="mb-0">{siteConfig.contact?.email || 'info@itechie.com'}</p>
             </div>
           </div>
-        </div>
-        <div class="col-lg-3 d-lg-block d-none align-self-center">
-          <div class="social-media-light text-md-end text-center">
+          <div class="social-media-light ms-2">
             {siteConfig.social?.facebook && <a href={siteConfig.social.facebook}><i class="fab fa-facebook-f"></i></a>}
             {siteConfig.social?.twitter && <a href={siteConfig.social.twitter}><i class="fab fa-twitter"></i></a>}
             {siteConfig.social?.instagram && <a href={siteConfig.social.instagram}><i class="fab fa-instagram"></i></a>}
@@ -231,10 +227,17 @@ const allServices = servicosData?.serviceArea?.items || [];
     background: var(--main-color) !important;
     padding: 0 !important;
   }
+  .mobile-toggle-wrapper,
+  .mobile-menu-overlay {
+    display: none !important;
+  }
   .nav-container {
     height: 80px; 
     display: flex;
     align-items: center;
+    justify-content: space-between !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
   .navbar-collapse {
     height: 100%;
@@ -254,6 +257,7 @@ const allServices = servicosData?.serviceArea?.items || [];
     padding: 0;
     list-style: none;
     flex-direction: row !important;
+    justify-content: flex-start !important;
   }
   .navbar-nav li {
     position: relative;
@@ -272,6 +276,9 @@ const allServices = servicosData?.serviceArea?.items || [];
     align-items: center;
     text-decoration: none;
     transition: 0.3s;
+  }
+  .navbar-nav li:first-child a {
+    padding-left: 0 !important;
   }
   .navbar-nav li:hover > a {
     background: rgba(0,0,0,0.1);
@@ -351,14 +358,23 @@ const allServices = servicosData?.serviceArea?.items || [];
   }
 
   .nav-right-part-desktop {
-    margin-right: -15px;
+    margin-right: 0px;
     height: 80px;
+    display: flex !important;
+    align-items: center;
+  }
+
+  @media (max-width: 991px) {
+    .nav-right-part-desktop {
+      display: none !important;
+    }
   }
 
   /* MODERN MOBILE MENU REDESIGN */
   @media (max-width: 991px) {
     .nav-container { padding: 0 15px !important; }
     .navbar-collapse { display: none !important; }
+    .mobile-toggle-wrapper { display: block !important; }
     
     .hamburger-menu {
       background: transparent;
@@ -399,6 +415,7 @@ const allServices = servicosData?.serviceArea?.items || [];
       justify-content: center;
     }
     .mobile-menu-overlay.active {
+      display: flex !important;
       opacity: 1;
       visibility: visible;
     }
