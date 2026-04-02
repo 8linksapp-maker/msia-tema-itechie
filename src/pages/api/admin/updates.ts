@@ -13,7 +13,13 @@ function readJson(file: string) {
 }
 
 function writeJson(file: string, data: any) {
-    writeFileSync(resolve(DATA_DIR, file), JSON.stringify(data, null, 4));
+    // Nunca tenta escrever no disco em produção (Vercel é read-only)
+    if (import.meta.env.PROD) return;
+    try {
+        writeFileSync(resolve(DATA_DIR, file), JSON.stringify(data, null, 4));
+    } catch (err) {
+        console.error(`Erro ao escrever ${file} localmente:`, err);
+    }
 }
 
 /** Busca arquivo de um repo público do GitHub via raw URL */
