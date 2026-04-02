@@ -70,16 +70,35 @@ export const GET: APIRoute = async ({ request }) => {
     const versionData = readJson('version.json');
 
     try {
+        let release: any = null;
+        let latestVersion = '0.0.0';
+
+        // Tenta buscar pelo Release oficial primeiro (melhor para notas de versão)
         const res = await fetch(`https://api.github.com/repos/${TEMPLATE_REPO}/releases/latest`, {
             headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'walker-cms' },
         });
 
-        if (!res.ok) {
-            return new Response(JSON.stringify({ error: 'Não foi possível verificar atualizações.' }), { status: 502 });
+        if (res.ok) {
+            release = await res.json();
+            latestVersion = release.tag_name?.replace(/^v/, '') || '0.0.0';
+        } else {
+            // Fallback: se não houver Releases, busca por Tags (mais comum em automações simples)
+            const tagsRes = await fetch(`https://api.github.com/repos/${TEMPLATE_REPO}/tags`, {
+                headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'walker-cms' },
+            });
+            if (tagsRes.ok) {
+                const tags = await tagsRes.json();
+                if (tags && tags.length > 0) {
+                    latestVersion = tags[0].name.replace(/^v/, '');
+                    release = { tag_name: tags[0].name, name: `Atualização ${tags[0].name}`, body: 'Nova versão disponível via tags.' };
+                }
+            }
         }
 
-        const release = await res.json();
-        const latestVersion = release.tag_name?.replace(/^v/, '') || '0.0.0';
+        if (!release) {
+            return new Response(JSON.stringify({ error: 'Nenhuma versão ou tag encontrada no repositório.' }), { status: 404 });
+        }
+
         const current = versionData.version || '1.0.0';
         const hasUpdate = latestVersion !== current;
 
@@ -93,10 +112,10 @@ export const GET: APIRoute = async ({ request }) => {
             latest: latestVersion,
             hasUpdate,
             releaseTag: release.tag_name,
-            releaseName: release.name,
+            releaseName: release.name || release.tag_name,
             releaseNotes: release.body || '',
-            releaseUrl: release.html_url,
-            publishedAt: release.published_at,
+            releaseUrl: release.html_url || `https://github.com/${TEMPLATE_REPO}/tags`,
+            publishedAt: release.published_at || new Date().toISOString(),
         }), { status: 200 });
 
     } catch (err: any) {
