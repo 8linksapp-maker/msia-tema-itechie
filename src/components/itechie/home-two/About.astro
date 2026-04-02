@@ -12,9 +12,9 @@ const img2 = about.image2 || "/itechie-assets/img/about/4.webp";
     <div class="row">
       <div class="col-lg-6 mb-5 mb-lg-0">
         <div class="about-thumb-inner pr-lg-5 position-relative">
-          <Image class="main-img w-100" src={img1} alt="Sobre Nós" width={570} height={400} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 10px; object-fit: cover;" />
+          <Image class="main-img w-100" src={img1} alt="Sobre Nós" width={570} height={400} widths={[360, 570]} sizes="(max-width: 768px) 100vw, 570px" loading="lazy" decoding="async" style="border-radius: 10px; object-fit: cover;" quality={60} format="webp" />
           
-          <Image class="main-img-2 d-none d-md-block" src={img2} alt="Sobre Nós 2" width={300} height={250} widths={[150, 300]} sizes="300px" loading="lazy" decoding="async" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%; object-fit: cover;" />
+          <Image class="main-img-2 d-none d-md-block" src={img2} alt="Sobre Nós 2" width={300} height={250} widths={[150, 300]} sizes="300px" loading="lazy" decoding="async" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%; object-fit: cover;" quality={60} format="webp" />
           
           <div class="experience-badge shadow" style="position: absolute; top: 30px; left: -20px; background: var(--main-color); color: #fff; padding: 30px 20px; text-align: center; border-radius: 10px;">
              <h2 style="color: #fff !important; margin: 0; font-size: 40px; font-weight: 800;">{about.experienceYears || 15}+</h2>
