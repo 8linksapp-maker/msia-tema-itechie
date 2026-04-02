@@ -1,0 +1,61 @@
+---
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const testimonialArea = homeData?.testimonial || { title: "O que dizem nossos clientes", subtitle: "Depoimentos", items: [] };
+const testimonials = testimonialArea.items;
+---
+
+<div class="testimonial-area pd-top-120 pd-bottom-90 bg-sky-blue">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="section-title text-center">
+          <h4 class="sub-title">{testimonialArea.subtitle}</h4>
+          <h2 class="title">{testimonialArea.title}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row flex-nowrap overflow-auto testimonials-scroll pb-4">
+      {testimonials.map((item) => (
+        <div class="col-lg-4 col-md-6 flex-shrink-0">
+          <div class="single-testimonial-inner h-100">
+            <div class="thumb">
+              <img src={item.image || item.img} alt={item.name} style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" />
+            </div>
+            <div class="details">
+              <p>{item.quote || item.text}</p>
+              <div class="ratting-wrap" style="color: #ffb400; margin-bottom: 15px;">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <i class={(i < (item.rating || 5)) ? "fa fa-star" : "far fa-star"}></i>
+                ))}
+              </div>
+              <h4>{item.name}</h4>
+              <span>{item.role || item.designation}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .testimonials-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--main-color) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .testimonials-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  .testimonials-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .testimonials-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--main-color);
+    border-radius: 20px;
+  }
+  .single-testimonial-inner {
+    min-height: 280px;
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+import { readData } from '../../../lib/readData';
+const sobreData = readData('sobre.json');
+const testimonial = sobreData?.testimonial || { title: "", subtitle: "", items: [] };
+---
+
+<div class="testimonial-area bg-sky pd-top-120 pd-bottom-120">
+   <div class="container">
+      <div class="row justify-content-center">
+         <div class="col-lg-6 col-md-10">
+            <div class="section-title text-center">
+               <h5 class="sub-title double-line">{testimonial.subtitle}</h5>
+               <h2 class="title">{testimonial.title}</h2>
+               <p class="content">{testimonial.description || "A satisfação de nossos parceiros é o combustível que nos move a cada novo projeto e desafio tecnológico."}</p>
+            </div>
+         </div>
+      </div>
+      
+      <div class="row">
+         {testimonial.items?.map((item: any) => (
+            <div class="col-lg-4 col-md-6">
+               <div class="single-testimonial-inner style-4">
+                  <img class="shaddow-img" src={item.image || "/itechie-assets/img/testimonial/02.webp"} alt="img" />
+                  <div class="details">
+                     <p>"{item.text}"</p>
+                     <h4>{item.name}</h4>
+                     <span class="designation">{item.role}</span>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .bg-sky {
+    background-color: #f4f4ff;
+  }
+  .single-testimonial-inner.style-4 {
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: 0.3s;
+    height: 100%;
+  }
+  .single-testimonial-inner.style-4:hover {
+    transform: translateY(-10px);
+  }
+  .shaddow-img {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    border: 5px solid #f4f4ff;
+  }
+  .details p {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  .details h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .designation {
+    color: var(--main-color);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+interface Props {
+  title: string;
+  subTitle: string;
+}
+
+const { title, subTitle } = Astro.props;
+---
+<div class="breadcrumb-area bg-relative bg-dark-base">
+  <div class="banner-bg-img" style="background-image: url(/itechie-assets/img/banner/bg-real.png); opacity: 0.1;"></div>
+  <div class="banner-bg-img" style="background-image: url(/itechie-assets/img/bg/1.webp); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.2; z-index: 1;"></div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-7 col-lg-8">
+        <div class="breadcrumb-inner text-center">
+          <h2 class="page-title">{title}</h2>
+          <ul class="page-list">
+            <li><a href="/">Início</a></li>
+            <li>{subTitle}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .breadcrumb-area {
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner-bg-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .breadcrumb-inner {
+    position: relative;
+    z-index: 2;
+  }
+  .page-title {
+    font-size: 70px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .page-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+  }
+  .page-list li {
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    position: relative;
+  }
+  .page-list li a {
+    color: #fff;
+    text-decoration: none;
+    padding-right: 20px;
+  }
+  .page-list li a::after {
+    content: "/";
+    position: absolute;
+    right: 8px;
+    color: #fff;
+  }
+  .page-list li:last-child {
+    color: var(--main-color);
+  }
+</style>

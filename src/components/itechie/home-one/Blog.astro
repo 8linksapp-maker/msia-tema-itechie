@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import { readData } from '../../../lib/readData';
+import { getAuthor } from '../../../lib/blogUtils';
+const sobreData = readData('sobre.json');
+const blogConfig = sobreData?.blog || { title: "POSTS DO BLOG", subtitle: "Leia nossas últimas dicas e truques", limit: 3 };
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).slice(0, blogConfig.limit);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+---
+
+<div class="blog-area pd-top-120 pd-bottom-90">
+   <div class="container">
+      <div class="row justify-content-center">
+         <div class="col-xl-6 col-lg-7 col-md-9">
+            <div class="section-title text-center">
+               <h5 class="sub-title double-line">{blogConfig.subtitle}</h5>
+               <h2 class="title">{blogConfig.title}</h2>
+               <p class="content">{blogConfig.description || "Fique por dentro das novidades do mundo da tecnologia e inovação com nossos artigos semanais."}</p>
+            </div>
+         </div>
+      </div>
+      <div class="row justify-content-center">
+         {posts.map((post) => (
+            <div class="col-lg-4 col-md-6">
+               <div class="single-blog-inner style-3">
+                  <div class="thumb">
+                     <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={post.data.title} />
+                     <ul class="blog-meta">
+                        <li><i class="fa fa-user"></i> Por {getAuthor(post.data.author).name}</li>
+                        <li><i class="fa fa-calendar-alt me-2"></i>{formatDate(post.data.pubDate)}</li>
+                     </ul>
+                  </div>
+                  <div class="details">
+                     <h4><a href={`/blog/${post.slug}`}>{post.data.title}</a></h4>
+                     <p>{post.data.description}</p>
+                     <a class="read-more-btn" href={`/blog/${post.slug}`}><i class="fa fa-arrow-right"></i></a>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .single-blog-inner {
+    margin-bottom: 30px;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 0.3s;
+  }
+  .single-blog-inner:hover {
+    transform: translateY(-5px);
+  }
+  .single-blog-inner .thumb {
+    position: relative;
+  }
+  .single-blog-inner .thumb img {
+    width: 100%;
+  }
+  .blog-meta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(var(--main-color-rgb), 0.8);
+    padding: 10px 20px;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 14px;
+  }
+  .blog-meta li i {
+    margin-right: 5px;
+  }
+  .single-blog-inner .details {
+    padding: 25px;
+  }
+  .single-blog-inner .details h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  .single-blog-inner .details p {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  .read-more-btn {
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    background: var(--main-color);
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    border-radius: 5px;
+    transition: 0.3s;
+  }
+  .read-more-btn:hover {
+    background: #111;
+    color: #fff;
+  }
+</style>

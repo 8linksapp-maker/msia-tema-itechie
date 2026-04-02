@@ -1,0 +1,49 @@
+{
+  "name": "iTechie Agency",
+  "description": "Transformamos marcas através de estratégias digitais de alta performance, SEO e Design focado em conversão.",
+  "author": "SkyDigital Team",
+  "language": "pt-BR",
+  "logo": "",
+  "theme": {
+    "primary": "#7c3aed",
+    "secondary": "#1e1b4b",
+    "accent": "#f43f5e",
+    "bgDark": "#1e1b4b",
+    "bgLight": "#faf5ff",
+    "textOnPrimary": "#ffffff",
+    "font": "playfair",
+    "name": "Cyberpunk"
+  },
+  "social": {
+    "instagram": "",
+    "twitter": "",
+    "facebook": "",
+    "pinterest": "",
+    "youtube": ""
+  },
+  "contact": {
+    "email": "",
+    "phone": "",
+    "address": "",
+    "name": ""
+  },
+  "legal": {
+    "terms_last_updated": "",
+    "privacy_last_updated": ""
+  },
+  "phone": "",
+  "address": "",
+  "header": {
+    "businessHours": "Seg - Sex || 08:00 - 18:00",
+    "ctaText": "Começar Agora",
+    "ctaLink": "/contato"
+  },
+  "footer": {
+    "description": "A ITechie é sua parceira definitiva em performance. Transformamos cliques em lucros e dados em decisões estratégicas para escalar seu negócio.",
+    "copyright": "Todos os direitos reservados à SkyDigital Agency",
+    "backgroundImage": "/itechie-assets/img/uploads/1775138718335-1600w_1vyani8ef4u.webp"
+  },
+  "seo": {
+    "description": "dasdasdasd"
+  }
+}

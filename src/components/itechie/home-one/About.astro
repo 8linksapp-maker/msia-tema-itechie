@@ -1,0 +1,53 @@
+---
+import { readData } from '../../../lib/readData';
+const sobreData = readData('sobre.json');
+const about = sobreData?.about || { subtitle: "", title: "", description: "", image: "", skills: [] };
+---
+
+<div class="about-area pd-top-120 pd-bottom-120">
+   <div class="container">
+      <div class="row">
+         <div class="col-lg-6 col-md-8">
+            <div class="about-mask-bg-wrap about-mask-bg-wrap-1 mb-4 mb-lg-0">
+               <!-- Foto Principal -->
+               <div class="thumb">
+                  <img src={about.image || "/itechie-assets/img/about/1.webp"} alt="img" />
+               </div>
+            </div>
+         </div>
+
+         <div class="col-lg-6 align-self-center">
+            <div class="section-title px-lg-5 mb-0">
+               <h5 class="sub-title right-line">{about.subtitle}</h5>
+               <h2 class="title">{about.title}</h2>
+               <p class="content">{about.description}</p>
+               <div class="exp-wrap mt-3">
+                  <div class="row">
+                     {about.skills && about.skills.map((skill: any) => (
+                        <div class="col-sm-4">
+                           <div class="single-exp-inner">
+                              <h2><span class="counter">{skill.percentage}</span> <sub>%</sub></h2>
+                              <h5>{skill.name}</h5>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+  /* REMOVIDO: Estilos de posição redundantes que quebravam o layout original */
+  .cms-dynamic-color {
+    /* Filtro de Precisão Global injetado pelo layout */
+    filter: var(--main-color-filter) !important;
+  }
+
+  .about-mask-bg-wrap-1 .thumb img {
+    mask-image: url(/itechie-assets/img/about/1m.webp);
+    -webkit-mask-image: url(/itechie-assets/img/about/1m.webp);
+  }
+</style>

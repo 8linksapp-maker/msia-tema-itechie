@@ -1,0 +1,137 @@
+---
+import ItechieLayout from '../../layouts/ItechieLayout.astro';
+import Breadcrumb from '../../components/itechie/Breadcrumb.astro';
+import BlogSidebar from '../../components/itechie/BlogSidebar.astro';
+import { readData } from '../../lib/readData';
+import { getCollection } from 'astro:content';
+import { getAuthor } from '../../lib/blogUtils';
+import { slugify } from '../../lib/slugify';
+
+export async function getStaticPaths() {
+  const categoriesData = readData('categories.json', []);
+  const posts = await getCollection('blog');
+  const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
+  const categoriesFromPosts = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
+  const allCategories = finalCategoriesData.length > 0 ? finalCategoriesData : categoriesFromPosts;
+
+  return allCategories.map(cat => ({
+    params: { categoria: slugify(cat) },
+    props: { categoryName: cat },
+  }));
+}
+
+const { categoryName } = Astro.props;
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const posts = allPosts.filter(p =>
+  (p.data.category || '').toLowerCase() === categoryName.toLowerCase()
+);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<ItechieLayout title={categoryName}>
+  <Breadcrumb title={categoryName} subTitle="Categoria" />
+  
+  <div class="blog-area pd-top-120 pd-bottom-120">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          {posts.length === 0 && (
+            <div class="text-center py-5">
+              <h3>Nenhum artigo encontrado nesta categoria.</h3>
+              <p>Confira outras seções do nosso blog!</p>
+            </div>
+          )}
+          
+          {posts.map((item) => (
+            <div class="single-blog-inner style-box">
+              <div class="thumb">
+                <img src={item.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={item.data.title} style="width: 100%; height: 450px; object-fit: cover;" />
+              </div>
+              <div class="details">
+                <ul class="blog-meta">
+                  <li><i class="far fa-user"></i> Por {getAuthor(item.data.author).name}</li>
+                  <li><i class="far fa-calendar-alt me-2"></i>{formatDate(item.data.pubDate)}</li>
+                  <li><i class="far fa-folder-open"></i> {item.data.category}</li>
+                </ul>
+                <h2 class="title"><a href={`/blog/${item.slug}`}>{item.data.title}</a></h2>
+                <p>{item.data.description}</p>
+                <a class="read-more-text" href={`/blog/${item.slug}`}>
+                  Ler Mais <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="col-lg-4 col-12">
+          <BlogSidebar />
+        </div>
+      </div>
+    </div>
+  </div>
+</ItechieLayout>
+
+<style>
+  .single-blog-inner.style-box {
+    margin-bottom: 50px;
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .single-blog-inner .details {
+    padding: 40px;
+  }
+  .blog-meta {
+    padding: 0;
+    margin: 0 0 15px 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 14px;
+    color: #666;
+  }
+  .blog-meta li i {
+    color: var(--main-color);
+    margin-right: 5px;
+  }
+  .single-blog-inner .title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .single-blog-inner .title a {
+    color: #111;
+    transition: 0.3s;
+  }
+  .single-blog-inner .title a:hover {
+    color: var(--main-color);
+  }
+  .read-more-text {
+    font-weight: 700;
+    color: var(--main-color);
+    text-transform: uppercase;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    transition: 0.3s;
+  }
+  .read-more-text i {
+    transition: 0.3s;
+    position: relative !important;
+    top: 0 !important;
+  }
+  .read-more-text:hover {
+    color: #111;
+    gap: 12px;
+  }
+</style>

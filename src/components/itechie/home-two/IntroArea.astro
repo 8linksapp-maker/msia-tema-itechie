@@ -1,0 +1,29 @@
+---
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const introData = homeData?.introArea || [];
+---
+
+<div class="intro-area mg-top--100 bg-relative">
+  <div class="container">
+    <div class="row justify-content-center">
+      {introData.map((item) => (
+        <div class="col-lg-4 col-md-6">
+          <div class="single-intro-inner">
+            <div class="thumb media">
+              <div class="media-left">
+                <i class={item.icon}></i>
+              </div>
+              <div class="media-body align-self-center">
+                <h4>{item.title}</h4>
+              </div>
+            </div>
+            <div class="details">
+              <p>{item.desc || item.text}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

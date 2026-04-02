@@ -1,0 +1,55 @@
+---
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import { readData } from '../lib/readData';
+
+const privacyData = readData('privacy.json');
+---
+
+<ItechieLayout title={privacyData.title}>
+  <Breadcrumb title={privacyData.title} subTitle="Institucional" />
+  
+  <div class="legal-page-area pd-top-120 pd-bottom-120">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="legal-content-wrap p-5 bg-white shadow-sm rounded-3 border border-slate-100">
+            {privacyData.lastUpdated && (
+              <div class="last-updated mb-4 pb-3 border-bottom text-muted italic">
+                Última atualização: {privacyData.lastUpdated}
+              </div>
+            )}
+
+            <div class="policy-body">
+              {privacyData.content?.map((section: any) => (
+                <div class="mb-5">
+                  <h3 class="mb-3 text-blue-700 font-bold">{section.title}</h3>
+                  <p class="text-slate-600 leading-relaxed" style="font-size: 17px;">{section.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-5 pt-4 border-top">
+              <p class="text-center font-medium">
+                Dúvidas sobre nossa política? <a href="/contato" class="text-blue-600 underline">Fale com nosso DPO</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ItechieLayout>
+
+<style is:global>
+  .legal-content-wrap {
+    border-radius: 20px;
+  }
+  .policy-body h3 {
+    font-size: 24px;
+    color: var(--main-color);
+  }
+  .policy-body p {
+    line-height: 1.8;
+  }
+</style>

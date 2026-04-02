@@ -1,0 +1,82 @@
+---
+import { readData } from '../../../lib/readData';
+const servicosData = readData('servicos.json');
+const { data = servicosData.testimonial2 } = Astro.props;
+const testimonial2 = data || { items: [] };
+---
+
+<div class="testimonial-slider bg-sky bg-relative testimonial-slider-bg pd-top-120 pd-bottom-120">
+   <div class="container bg-relative">
+      <div class="slider testimonial-thumb">
+         {testimonial2.items?.map((item: any) => (
+            <div class="item">
+               <div class="row align-items-center">
+                  <div class="col-md-5">
+                     <div class="thumb mb-4 mb-md-0 position-relative">
+                        <img src={item.image || "/itechie-assets/img/testimonial/2.webp"} alt="img" class="w-100 rounded" />
+                        <div class="quote-wrap">
+                           <div class="quote">
+                              <img src="/itechie-assets/img/quote.webp" alt="img" />
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-7 px-lg-5">
+                     <div class="single-testimonial-inner">
+                        <div class="details">
+                           <h2 class="mb-2">{item.name}</h2>
+                           <span class="designation d-block mb-3">{item.role}</span>
+                           <p class="content">"{item.text}"</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .bg-sky {
+    background-color: #f4f4ff;
+  }
+  .testimonial-slider-bg {
+    background-image: url('/itechie-assets/img/bg/4.webp');
+    background-size: cover;
+    background-position: center;
+  }
+  .quote-wrap {
+    position: absolute;
+    bottom: -25px;
+    right: -25px;
+    background: var(--main-color);
+    height: 80px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 5px solid #fff;
+  }
+  .quote img {
+    width: 30px;
+  }
+  .single-testimonial-inner h2 {
+    font-size: 36px;
+    font-weight: 700;
+  }
+  .designation {
+    color: var(--main-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .content {
+    font-size: 20px;
+    line-height: 1.6;
+    font-style: italic;
+    color: #666;
+  }
+</style>

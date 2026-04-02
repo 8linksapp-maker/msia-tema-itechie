@@ -1,0 +1,83 @@
+---
+import { readData } from '../../../lib/readData';
+const sobreData = readData('sobre.json');
+const counter = sobreData?.counter || { title: "", image: "", stats: [] };
+---
+
+<div class="counter-area bg-overlay-black pd-top-110 pd-bottom-110" style={`background-image: url('${counter.image || "/itechie-assets/img/bg/7.webp"}'); background-size: cover; background-position: center;`}>
+   <div class="container">
+      <div class="row">
+         <div class="col-lg-5">
+            <div class="section-title style-white">
+               <h2 class="title">{counter.title}</h2>
+            </div>
+         </div>
+      </div>
+      
+      <div class="row">
+         <div class="col-md">
+            <a class="video-play-btn mb-5 mb-md-0 video-play-btn-base" style="cursor: pointer;"><i class="fa fa-play"></i></a>
+         </div>
+         {counter.stats?.map((item: any) => (
+            <div class="col-md">
+               <div class="single-exp-inner style-white">
+                  <h2><span class="counter">{item.number}</span> <sub>+</sub></h2>
+                  <h5>{item.text}</h5>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .bg-overlay-black {
+    position: relative;
+    z-index: 1;
+  }
+  .bg-overlay-black::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: -1;
+  }
+  .section-title.style-white .title {
+    color: #fff;
+    font-size: 45px;
+    font-weight: 700;
+  }
+  .single-exp-inner.style-white h2 {
+    color: #fff;
+    font-size: 50px;
+    font-weight: 700;
+  }
+  .single-exp-inner.style-white h2 sub {
+    font-size: 20px;
+    bottom: 5px;
+  }
+  .single-exp-inner.style-white h5 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .video-play-btn {
+    height: 80px;
+    width: 80px;
+    line-height: 80px;
+    background: var(--main-color);
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 24px;
+    animation: pulse-border 1500ms ease-out infinite;
+  }
+  @keyframes pulse-border {
+    0% { transform: scale(0.9); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+</style>

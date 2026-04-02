@@ -1,0 +1,84 @@
+---
+const { data } = Astro.props;
+const workArea = data || { title: "", subtitle: "", description: "", steps: [] };
+---
+
+<div class="how-it-work-area bg-blue pd-top-120 pd-bottom-120">
+   <div class="container">
+      <div class="row justify-content-center">
+         <div class="col-lg-6">
+            <div class="section-title style-white text-center">
+               <h5 class="sub-title double-line">{workArea.subtitle}</h5>
+               <h2 class="title">{workArea.title}</h2>
+               <p class="content">{workArea.description}</p>
+            </div>
+         </div>
+      </div>
+      <div class="row flex-nowrap" style="margin-right: -15px; margin-left: -15px; overflow: visible !important; justify-content: center;">
+         {workArea.steps?.map((item: any) => (
+            <div class="flex-fill" style="flex: 1 1 0px; min-width: 0; padding: 0 10px;">
+               <div class="single-work-inner style-two text-center h-100">
+                  <div class="count-wrap">
+                     <div class="count-inner">
+                        <h2 style="color: #fff !important; opacity: 1 !important; visibility: visible !important;">{item.count}</h2>
+                     </div>
+                  </div>
+                  <div class="details-wrap">
+                     <div class="details-inner">
+                        <h4>{item.title}</h4>
+                        <p>{item.desc}</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+
+   </div>
+</div>
+
+<style>
+  .bg-blue {
+    background: var(--main-color);
+  }
+  .single-work-inner.style-two {
+    background: #fff;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    height: 100%;
+    transition: 0.3s;
+    position: relative;
+    z-index: 1;
+  }
+  .single-work-inner.style-two:hover {
+    transform: translateY(-10px);
+  }
+  .count-wrap {
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+  }
+  /* Forçar os números a aparecerem sempre, não só no hover */
+  .count-inner h2 {
+    color: #fff !important;
+    opacity: 1 !important;
+    background: var(--main-color) !important;
+    display: inline-block !important;
+    border: 10px solid rgba(var(--main-color-rgb), 0.2) !important;
+  }
+  
+  .details-inner h4 {
+    font-size: clamp(16px, 1.5vw, 22px);
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  .details-inner p {
+    color: #666;
+    margin: 0;
+    font-size: clamp(13px, 1.2vw, 15px);
+  }
+  .style-white h5, .style-white h2, .style-white p {
+    color: #fff;
+  }
+</style>

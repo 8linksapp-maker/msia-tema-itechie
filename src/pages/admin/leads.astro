@@ -1,0 +1,17 @@
+---
+export const prerender = false;
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import LeadsViewer from '../../components/admin/LeadsViewer';
+---
+
+<AdminLayout title="CMS - Leads de Contato">
+  <div class="p-6 max-w-7xl mx-auto pb-32">
+    <div class="mb-8 pl-4 border-l-4 border-blue-500">
+      <h1 class="text-3xl font-bold text-slate-800">Mensagens Recebidas</h1>
+      <p class="text-slate-500 mt-2">Visualize e gerencie os leads capturados pelo formulário do site.</p>
+    </div>
+    <main>
+      <LeadsViewer client:only="react" />
+    </main>
+  </div>
+</AdminLayout>

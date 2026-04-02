@@ -1,0 +1,50 @@
+---
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import BlogSidebar from '../components/itechie/BlogSidebar.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<ItechieLayout title="Blog">
+  <Breadcrumb title="Nosso Blog" subTitle="Blog" />
+  
+  <div class="blog-area pd-top-120 pd-bottom-120">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          {posts.map((item) => (
+            <div class="single-blog-inner">
+              <div class="thumb">
+                <img src={item.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={item.data.title} />
+              </div>
+              <div class="details">
+                <h2><a href={`/blog/${item.slug}`}>{item.data.title}</a></h2>
+                <ul class="blog-meta">
+                  <li><i class="far fa-user"></i> Por {item.data.author || 'Admin'}</li>
+                  <li><i class="far fa-calendar-alt me-2"></i>{formatDate(item.data.pubDate)}</li>
+                  <li><i class="far fa-folder-open"></i> {item.data.category || 'Geral'}</li>
+                </ul>
+                <p>{item.data.description}</p>
+                <a class="read-more-text" href={`/blog/${item.slug}`}>
+                  Ler Mais <i class="fa fa-caret-right"></i>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="col-lg-4 col-12">
+          <BlogSidebar />
+        </div>
+      </div>
+    </div>
+  </div>
+</ItechieLayout>

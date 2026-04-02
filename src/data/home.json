@@ -1,0 +1,143 @@
+{
+  "hero": {
+    "title": "Transformamos Cliques em Clientes e Dados em Lucro",
+    "subtitle": "Agência de Performance Digital",
+    "description": "A SkyDigital Agency utiliza estratégias avançadas de tráfego pago, SEO e tecnologia para escalar o faturamento da sua empresa no ambiente digital.",
+    "backgroundImage": "/itechie-assets/img/uploads/1775136731489-marketing.jpg",
+    "btnLeft": {
+      "text": "Nossos Serviços",
+      "link": "/servicos"
+    },
+    "btnRight": {
+      "text": "Consultoria Grátis",
+      "link": "/contato"
+    }
+  },
+  "introArea": [
+    {
+      "icon": "icomoon-back",
+      "title": "Estratégia Full-Funnel",
+      "desc": "Acompanhamos toda a jornada do seu cliente, do clique à conversão."
+    },
+    {
+      "icon": "icomoon-clock",
+      "title": "Foco Total em ROI",
+      "desc": "Cada centavo investido é otimizado para gerar o máximo de retorno direto."
+    },
+    {
+      "icon": "icomoon-chat",
+      "title": "Suporte Especializado",
+      "desc": "Atendimento proativo com especialistas certificados pelas maiores plataformas."
+    }
+  ],
+  "about": {
+    "title": "Sua Parceira Estratégica em Resultados Digitais",
+    "subtitle": "Sobre a SkyDigital",
+    "description": "Somos uma agência focada em performance. Não entregamos apenas 'likes', entregamos vendas e autoridade. Com mais de 10 anos de mercado, ajudamos empresas a dominarem o ambiente digital através de metodologias validadas de crescimento acelerado.",
+    "features": [
+      "Estratégias personalizadas por nicho de atuação",
+      "Foco total em Retorno sobre Investimento (ROI)",
+      "Time de especialistas seniores certificados",
+      "Análise de dados em tempo real para otimização"
+    ],
+    "experienceYears": 12,
+    "experienceText": "Anos de Experiência no Mercado",
+    "image1": "/itechie-assets/img/uploads/1775137089321-plano_de_marketing.png",
+    "image2": "/itechie-assets/img/uploads/1775137113170-marketing.webp"
+  },
+  "skillArea": {
+    "title": "Domínio Técnico em Marketing de Performance",
+    "subtitle": "Nossa Experiência",
+    "description": "Dominamos as principais tecnologias e plataformas de mercado para garantir que sua marca esteja sempre um passo à frente da concorrência.",
+    "image1": "/itechie-assets/img/uploads/1775137196334-marketing.webp",
+    "image2": "/itechie-assets/img/uploads/1775137203539-marketing.jpg",
+    "image3": "/itechie-assets/img/uploads/1775137228508-marketing.jpe",
+    "skills": [
+      {
+        "title": "Tráfego Pago (Google & Meta Ads)",
+        "percentage": 98
+      },
+      {
+        "title": "SEO & Autoridade de Domínio",
+        "percentage": 95
+      },
+      {
+        "title": "UX/UI & Design de Conversão",
+        "percentage": 88
+      },
+      {
+        "title": "Copywriting Estratégico",
+        "percentage": 92
+      }
+    ]
+  },
+  "serviceArea": {
+    "title": "Soluções 360° para Escalar seu Negócio",
+    "subtitle": "O Que Fazemos",
+    "items": [
+      {
+        "icon": "icomoon-calendar-2",
+        "title": "Gestão de Tráfego de Elite",
+        "desc": "Anúncios em Google Ads, Meta Ads e TikTok focados em escala e ROI.",
+        "link": "/servico/gestao-trafego-elite"
+      },
+      {
+        "icon": "icomoon-approval",
+        "title": "SEO & Autoridade Orgânica",
+        "desc": "Domine a primeira página do Google de forma sustentável e gratuita.",
+        "link": "/servico/seo-autoridade-elite"
+      },
+      {
+        "icon": "icomoon-calendar-2",
+        "title": "Design de Alta Conversão",
+        "desc": "Criação de Landing Pages e Funis de Venda que convertem cliques em lucro.",
+        "link": "/servico/design-conversao-lp"
+      },
+      {
+        "icon": "icomoon-chat-2",
+        "title": "BI & Estratégia de Dados",
+        "desc": "Decisões baseadas em dados reais para eliminar o achismo do seu marketing.",
+        "link": "/servico/bi-estrategia-dados"
+      }
+    ]
+  },
+  "testimonial": {
+    "title": "O Que Nossos Clientes Dizem",
+    "subtitle": "Depoimentos de Sucesso",
+    "items": [
+      {
+        "image": "/itechie-assets/img/uploads/1775137271067-icon.png",
+        "name": "Ricardo Santos",
+        "role": "CEO - E-commerce de Moda",
+        "rating": 5,
+        "quote": "A SkyDigital triplicou nossas vendas em apenas 4 meses de consultoria. O foco obsessivo deles em ROI é o grande diferencial."
+      },
+      {
+        "image": "/itechie-assets/img/uploads/1775137274166-icon.png",
+        "name": "Mariana Oliveira",
+        "role": "Fundadora - Fintech SaaS",
+        "rating": 5,
+        "quote": "O time de SEO é fantástico. Saímos do zero para a primeira página do Google em termos extremamente competitivos em tempo recorde."
+      },
+      {
+        "image": "/itechie-assets/img/uploads/1775137281815-icon.png",
+        "name": "Carlos Eduardo",
+        "role": "Diretor Comercial - Indústria Tech",
+        "rating": 5,
+        "quote": "A melhor decisão que tomamos para o nosso marketing foi contratar a SkyDigital. Transparência e resultados reais."
+      }
+    ]
+  },
+  "sectionTitles": {
+    "latestPosts": "Blog & Insights Estratégicos",
+    "popularTab": "Mais Lidos",
+    "recentTab": "Últimos Insights"
+  },
+  "latestPosts": {
+    "subtitle": "Informação & Estratégia",
+    "description": "Fique por dentro das últimas tendências de marketing digital, tráfego pago e tecnologias que estão moldando o futuro das vendas online.",
+    "limit": 3,
+    "btnText": "Explorar Conteúdo",
+    "btnLink": "/blog"
+  }
+}

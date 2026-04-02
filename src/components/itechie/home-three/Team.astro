@@ -1,0 +1,66 @@
+---
+import { readData } from '../../../lib/readData';
+const sobreData = readData('sobre.json');
+const team = sobreData?.team || { title: "", subtitle: "", members: [] };
+---
+
+<div class="team-area pd-top-120 pd-bottom-90">
+   <div class="container">
+      <div class="row justify-content-center">
+         <div class="col-lg-6 col-md-10">
+            <div class="section-title text-center">
+               <h5 class="sub-title double-line">{team.subtitle}</h5>
+               <h2 class="title">{team.title}</h2>
+               <p class="content">{team.description || "Nossa equipe é composta pelos melhores profissionais do mercado, prontos para entregar excelência técnica e inovação constante."}</p>
+            </div>
+         </div>
+      </div>
+      
+      <div class="row">
+         {team.members?.map((item: any) => (
+            <div class="col-lg-3 col-md-6">
+               <div class="single-team-inner text-center">
+                  <div class="thumb">
+                     <img src={item.image || "/itechie-assets/img/team/1.webp"} alt="img" />
+                  </div>
+                  <div class="details-wrap">
+                     <div class="details-inner">
+                        <h4>{item.name}</h4>
+                        <p>{item.role}</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .single-team-inner {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    background: var(--bg-light);
+    transition: 0.4s;
+    border: 1px solid var(--bg-light);
+  }
+  .single-team-inner .thumb img {
+    width: 100%;
+    transition: 0.4s;
+  }
+  .single-team-inner .details-wrap {
+    padding: 20px;
+  }
+  .single-team-inner .details-inner h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .single-team-inner .details-inner p {
+    margin-bottom: 0;
+    color: var(--main-color) !important;
+    font-weight: 600;
+  }
+</style>

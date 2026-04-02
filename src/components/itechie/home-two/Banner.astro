@@ -1,0 +1,67 @@
+---
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const hero = homeData?.hero || {};
+---
+<div class="banner-area banner-area-2 bg-relative" style={`background-image: url('${hero.backgroundImage || "/itechie-assets/img/banner/bg-real.png"}'); background-size: cover; background-position: center; min-height: 800px; display: flex; align-items: center; background-color: #0b0d26;`}>
+  <div class="bg-overlay-gradient" style="opacity: 0.6;"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-7 col-md-10">
+        <div class="banner-inner">
+          <h4 class="sub-title">{hero.subtitle}</h4>
+          <h2 class="title" set:html={hero.title.replace('<span>', '<span style="color:var(--main-color);">')}></h2>
+          <p class="content">{hero.description || "Focamos em resultados reais através de tráfego pago, SEO e design de conversão."}</p>
+          <div class="btn-wrap banner-2-btn">
+            {hero.btnLeft?.text && <a class="it-btn btn-base" href={hero.btnLeft.link}>{hero.btnLeft.text}</a>}
+            {hero.btnRight?.text && <a class="it-btn btn-black" href={hero.btnRight.link}>{hero.btnRight.text}</a>}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .banner-area-2 {
+    overflow: hidden;
+    position: relative;
+  }
+  .banner-inner {
+    position: relative;
+    z-index: 2;
+  }
+  .bg-overlay-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Contraste Absoluto: Preto puro na esquerda -> Cor do Tema -> Imagem na direita */
+    background: linear-gradient(to right, 
+      #000 0%, 
+      rgba(var(--bg-dark-rgb), 1) 30%, 
+      rgba(var(--bg-dark-rgb), 0.95) 60%, 
+      rgba(var(--bg-dark-rgb), 0.4) 100%
+    );
+    z-index: 1;
+  }
+  .sub-title {
+    color: var(--main-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  .title {
+    color: #fff;
+    font-size: 60px;
+    line-height: 1.2;
+    margin-bottom: 25px;
+  }
+  .content {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+  }
+</style>

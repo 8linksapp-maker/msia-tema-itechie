@@ -1,0 +1,60 @@
+---
+import { readData } from '../../../lib/readData';
+const sobreData = readData('sobre.json');
+const chooseArea = sobreData?.chooseArea || { title: "", subtitle: "", items: [] };
+---
+
+<div class="why-choose pd-top-120 pd-bottom-120">
+   <div class="container">
+      <div class="row">
+         <div class="col-lg-6 col-md-8 order-lg-last">
+            <div class="about-mask-bg-wrap about-mask-bg-wrap-2 mb-4 mb-lg-0">
+               <!-- Foto Principal -->
+               <div class="thumb">
+                  <img src={chooseArea.image || "/itechie-assets/img/about/2.webp"} alt="img" />
+               </div>
+            </div>
+         </div>
+         
+         <div class="col-lg-6 order-lg-first align-self-center">
+            <div class="section-title px-lg-5 mb-0">
+               <h5 class="sub-title right-line">{chooseArea.subtitle}</h5>
+               <h2 class="title">{chooseArea.title}</h2>
+               <div class="choose-wrap mt-4 pt-2">
+                  {chooseArea.items?.map((item: any) => (
+                     <div class="media single-choose-inner mb-3">
+                        <div class="media-left">
+                           <div class="icon">
+                              <i class={item.icon}></i>
+                           </div>
+                        </div>
+                        <div class="media-body">
+                           <h4>{item.title}</h4>
+                           <p>{item.text}</p>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+  /* REMOVIDO: Estilos de posição redundantes que quebravam o layout original */
+  .cms-dynamic-color {
+    /* Filtro de Precisão Global injetado pelo layout */
+    filter: var(--main-color-filter) !important;
+  }
+  
+  .about-mask-bg-wrap-2 .thumb img {
+    mask-image: url(/itechie-assets/img/about/2m.webp);
+    -webkit-mask-image: url(/itechie-assets/img/about/2m.webp);
+  }
+
+  .single-choose-inner .icon {
+    background: var(--bg-light);
+    color: var(--main-color);
+  }
+</style>

@@ -1,0 +1,129 @@
+---
+import ItechieLayout from '../../layouts/ItechieLayout.astro';
+import Breadcrumb from '../../components/itechie/Breadcrumb.astro';
+import BlogSidebar from '../../components/itechie/BlogSidebar.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+const post = Astro.props;
+const { Content } = await post.render();
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<ItechieLayout title={post.data.title} description={post.data.description}>
+  <Breadcrumb title="Detalhes do Blog" subTitle={post.data.title} />
+  
+  <div class="blog-area pd-top-120 pd-bottom-120">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="blog-details-page-content">
+            <div class="single-blog-inner">
+              <div class="thumb">
+                <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={post.data.title} />
+              </div>
+              <div class="details">
+                <ul class="blog-meta">
+                  <li><i class="far fa-user"></i> Por {post.data.author || 'Admin'}</li>
+                  <li><i class="far fa-calendar-alt"></i> {formatDate(post.data.pubDate)}</li>
+                  <li><i class="far fa-folder-open"></i> {post.data.category || 'Geral'}</li>
+                </ul>
+                
+                <h2>{post.data.title}</h2>
+                
+                <div class="blog-content-content">
+                  <Content />
+                </div>
+
+                <blockquote>
+                  <i class="fas fa-quote-right"></i>
+                  <p>Inovação é o que distingue um líder de um seguidor. Estamos aqui para liderar a sua transformação digital.</p>
+                </blockquote>
+
+                <div class="tag-and-share">
+                  <div class="row">
+                    <div class="col-sm-7">
+                      <div class="tags d-inline-block">
+                        <strong>Tag : </strong>
+                        <a href="#">Tecnologia</a>
+                        <a href="#">Inovação</a>
+                      </div>
+                    </div>
+                    <div class="col-sm-5 mt-3 mt-sm-0 text-sm-end align-self-center">
+                      <div class="blog-share">
+                        <ul>
+                          <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                          <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                          <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                          <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="prev-next-post">
+                  <div class="row">
+                    <div class="col-6">
+                      <a class="it-btn btn-border-black" href="/blog">
+                        <i class="fa fa-arrow-left"></i> Post Anterior
+                      </a>
+                    </div>
+                    <div class="col-6 text-end">
+                      <a class="it-btn btn-border-black" href="/blog">
+                        Próximo Post <i class="fa fa-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mt-8">
+              <h3 class="text-xl font-bold mb-4">Deixe um Comentário</h3>
+              <form class="flex flex-col gap-4">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <textarea rows="4" placeholder="Seu comentário..." class="form-control"></textarea>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <input type="text" placeholder="Seu nome" class="form-control" />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <input type="email" placeholder="Seu e-mail" class="form-control" />
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="it-btn btn-base">Enviar Comentário</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-12">
+          <BlogSidebar />
+        </div>
+      </div>
+    </div>
+  </div>
+</ItechieLayout>
+
+<style is:global>
+  .blog-content-content p {
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+  .blog-content-content h2, .blog-content-content h3 {
+    margin: 30px 0 15px;
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const blogArea = homeData?.latestPosts || { limit: 3, btnText: "Ver Todos", btnLink: "/blog" };
+const titles = homeData?.sectionTitles || { latestPosts: "Posts Recentes" };
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).slice(0, blogArea.limit);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<div class="blog-area pd-top-115 pd-bottom-60">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-6 col-lg-7 col-md-10">
+        <div class="section-title text-center">
+          <h5 class="sub-title double-line">{blogArea.subtitle || "Blog"}</h5>
+          <h2 class="title">{titles.latestPosts}</h2>
+          <p class="content">{blogArea.description || "Fique por dentro das últimas novidades e tendências em tecnologia e inovação digital."}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row justify-content-center">
+      {posts.map((post) => (
+        <div class="col-lg-4 col-md-6">
+          <div class="single-blog-inner style-2">
+            <div class="thumb">
+              <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={post.data.title} />
+            </div>
+            <div class="details">
+              <h4><a href={`/blog/${post.slug}`}>{post.data.title}</a></h4>
+              <ul class="blog-meta">
+                <li><i class="far fa-user"></i> Por {post.data.author || 'Admin'}</li>
+                <li><i class="far fa-calendar-alt me-2"></i>{formatDate(post.data.pubDate)}</li>
+              </ul>
+              <p>{post.data.description}</p>
+              <a class="read-more-text" href={`/blog/${post.slug}`}>
+                Ler Mais <i class="fa fa-caret-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

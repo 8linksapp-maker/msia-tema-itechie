@@ -1,0 +1,50 @@
+---
+const projects = [
+  {
+    id: 1,
+    title: "Plataforma E-commerce",
+    category: "Desenvolvimento Web",
+    img: "/itechie-assets/img/project/1.webp"
+  },
+  {
+    id: 2,
+    title: "App de Logística",
+    category: "Mobile App",
+    img: "/itechie-assets/img/project/2.webp"
+  },
+  {
+    id: 3,
+    title: "Segurança de Dados",
+    category: "Cyber Segurança",
+    img: "/itechie-assets/img/project/3.webp"
+  }
+];
+---
+
+<div class="project-area pd-top-115 pd-bottom-90">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="section-title text-center">
+          <h4 class="sub-title">Nossos Projetos</h4>
+          <h2 class="title">Trabalhos de <span>Classe Mundial</span></h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      {projects.map((project) => (
+        <div class="col-lg-4 col-md-6">
+          <div class="single-project-inner">
+            <div class="thumb">
+              <img src={project.img} alt={project.title} style="width: 100%; height: 400px; object-fit: cover;" />
+            </div>
+            <div class="details">
+              <span>{project.category}</span>
+              <h4><a href="#">{project.title}</a></h4>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

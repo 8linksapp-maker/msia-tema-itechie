@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import { readData } from '../../lib/readData';
+import { slugify } from '../../lib/slugify';
+
+const recentPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const categoriesData = readData('categories.json', []);
+const posts = await getCollection('blog');
+const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
+const categoriesFromPosts = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
+const allCategories = finalCategoriesData.length > 0 ? finalCategoriesData : categoriesFromPosts;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+---
+<div class="td-sidebar">
+  <div class="widget widget_catagory">
+    <h4 class="widget-title">Categorias</h4>
+    <ul class="catagory-items">
+      {allCategories.map((cat) => (
+        <li><a href={`/categoria/${slugify(cat as string)}`}>{cat}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="widget widget-recent-post">
+    <h4 class="widget-title">Notícias Recentes</h4>
+    <ul>
+      {recentPosts.map((post) => (
+        <li>
+          <div class="media">
+            <div class="media-left">
+              <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt="blog" style="width: 80px; height: 80px; object-fit: cover;" />
+            </div>
+            <div class="media-body align-self-center">
+              <h5 class="title"><a href={`/blog/${post.slug}`}>{post.data.title}</a></h5>
+              <div class="post-info"><i class="far fa-calendar-alt"></i> <span>{formatDate(post.data.pubDate)}</span></div>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+---
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const serviceArea = homeData?.serviceArea || { title: "Oferecemos serviços de classe mundial", subtitle: "Nossos Serviços", items: [] };
+const serviceData = serviceArea.items;
+---
+
+<div class="service-area pd-top-115 pd-bottom-90" style="background-image: url('/itechie-assets/img/bg/6.webp'); background-size: cover;">
+  <div class="container">
+    <div class="section-title">
+      <div class="row">
+        <div class="col-xl-6 col-lg-7 mb-4 mb-lg-0">
+          <h5 class="sub-title left-border">{serviceArea.subtitle}</h5>
+          <h2 class="title">{serviceArea.title}</h2>
+        </div>
+        <div class="col-xl-6 col-lg-5 align-self-center">
+          <div class="btn-wrap text-md-end">
+            <a class="it-btn btn-base" href="/servicos">Ver todos os serviços</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      {serviceData.map((item) => (
+        <div class="col-lg-4 col-md-6">
+          <div class="single-service-inner text-center">
+            <div class="icon-box-bg">
+              <i class={item.icon}></i>
+            </div>
+            <div class="details">
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+            </div>
+            <div class="details-hover-wrap">
+              <div class="details-hover">
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+                <a class="it-btn btn-base btn-small" href={item.link || `/servico/${item.slug}`}>Ver Detalhes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

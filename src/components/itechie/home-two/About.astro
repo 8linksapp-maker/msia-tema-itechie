@@ -1,0 +1,42 @@
+---
+import { readData } from '../../../lib/readData';
+const homeData = readData('home.json');
+const about = homeData?.about || {};
+---
+<div class="about-area pd-top-90 pd-bottom-120">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="about-thumb-inner pr-lg-5 position-relative">
+          <img class="main-img w-100" src={about.image1 || "/itechie-assets/img/about/3.webp"} alt="Sobre Nós" style="border-radius: 10px;" />
+          <img class="main-img-2 d-none d-md-block" src={about.image2 || "/itechie-assets/img/about/4.webp"} alt="Sobre Nós 2" style="position: absolute; right: -10px; bottom: -30px; border: 10px solid #fff; border-radius: 10px; max-width: 50%;" />
+          
+          <div class="experience-badge shadow" style="position: absolute; top: 30px; left: -20px; background: var(--main-color); color: #fff; padding: 30px 20px; text-align: center; border-radius: 10px;">
+             <h2 style="color: #fff !important; margin: 0; font-size: 40px; font-weight: 800;">{about.experienceYears || 15}+</h2>
+             <p style="color: #fff !important; margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase;">{about.experienceText || "Anos de Experiência"}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6 align-self-center">
+        <div class="section-title px-lg-5 mb-0">
+          <h5 class="sub-title left-border">{about.subtitle || "Sobre Nós"}</h5>
+          <h2 class="title">{about.title || "Trabalhando no mundo com vasta experiência"}</h2>
+          <p class="content-strong mt-4">{about.description || "Dedicados a fornecer as melhores soluções tecnológicas para impulsionar o seu negócio no ambiente digital."}</p>
+          
+          <div class="list-wrap mt-4 pt-2">
+            <ul class="single-list-inner style-check style-heading style-check mb-3">
+              {about.features && about.features.map((feat: string) => (
+                <li style="margin-bottom: 15px; font-weight: 600; color: #111;">
+                  <i class="fas fa-check-circle" style="color: var(--main-color); margin-right: 10px;"></i> 
+                  {feat}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

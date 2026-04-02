@@ -1,0 +1,88 @@
+---
+const { service = {} } = Astro.props;
+
+const default_benefits = [
+  { id: 1, icon: "icomoon-gear", title: "Soluções Flexíveis", desc: "Adaptamos nossas tecnologias às suas necessidades." },
+  { id: 2, icon: "icomoon-time", title: "Suporte Ilimitado 24/7", desc: "Estamos sempre aqui para ajudar você." },
+  { id: 3, icon: "icomoon-team", title: "Equipe Especializada", desc: "Profissionais qualificados em diversas áreas." },
+  { id: 4, icon: "icomoon-profile", title: "Foco no Cliente", desc: "Seu sucesso é a nossa prioridade número um." }
+];
+
+const benefits = service.benefits || default_benefits;
+const categories = service.categories || ["Marketing Digital", "Performance", "SEO", "Design UX", "Growth"];
+const moreInfo = service.moreInfo || "Trabalhamos com as tecnologias mais modernas do mercado para entregar resultados concretos e mensuráveis.";
+---
+
+<div class="project-area pd-top-120 mb-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="blog-details-page-content">
+          <div class="single-blog-inner">
+            <div class="thumb">
+              <img src={service.image || "/itechie-assets/img/service/service-single.webp"} alt="img" />
+            </div>
+            <div class="details">
+              <h2>{service.title}</h2>
+              <p>{service.fullDesc || service.desc}</p>
+              
+              <h4 class="pt-4 mb-4">Principais Benefícios</h4>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  {benefits.slice(0, 2).map((item: any) => (
+                    <div class="media single-choose-inner">
+                      <div class="media-left">
+                        <div class="icon">
+                          <i class={item.icon}></i>
+                        </div>
+                      </div>
+                      <div class="media-body">
+                        <h4>{item.title}</h4>
+                        <p>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div class="col-md-6">
+                  {benefits.slice(2, 4).map((item: any) => (
+                    <div class="media single-choose-inner">
+                      <div class="media-left">
+                        <div class="icon">
+                          <i class={item.icon}></i>
+                        </div>
+                      </div>
+                      <div class="media-body">
+                        <h4>{item.title}</h4>
+                        <p>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <h4>Mais Informações</h4>
+              <p>{moreInfo}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-12">
+        <div class="td-service-sidebar">
+          {service.sidebarCta && (
+            <div class="widget widget-cta-sidebar text-center" style="background: var(--main-color); padding: 50px 30px; border-radius: 5px; position: relative; z-index: 1; overflow: hidden;">
+              <div class="details">
+                 <h4 class="text-white mb-3" style="font-weight: 700;">{service.sidebarCta.title}</h4>
+                 <p class="text-white mb-4" style="opacity: 0.9;">{service.sidebarCta.subtitle}</p>
+                 <a href={service.sidebarCta.btnLink} class="it-btn btn-black w-100" style="border-radius: 4px;">
+                   {service.sidebarCta.btnText}
+                 </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

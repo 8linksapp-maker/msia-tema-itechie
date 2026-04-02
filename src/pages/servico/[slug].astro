@@ -1,0 +1,23 @@
+---
+import ItechieLayout from '../../layouts/ItechieLayout.astro';
+import Breadcrumb from '../../components/itechie/Breadcrumb.astro';
+import ServiceDetails from '../../components/itechie/ServiceDetails.astro';
+import { readData } from '../../lib/readData';
+
+export async function getStaticPaths() {
+  const servicosData = readData('servicos.json');
+  const items = servicosData?.serviceArea?.items || [];
+  
+  return items.map((item: any) => ({
+    params: { slug: item.slug },
+    props: { service: item },
+  }));
+}
+
+const { service } = Astro.props;
+---
+
+<ItechieLayout title={service.title}>
+  <Breadcrumb title={service.title} subTitle="Detalhes do Serviço" />
+  <ServiceDetails service={service} />
+</ItechieLayout>

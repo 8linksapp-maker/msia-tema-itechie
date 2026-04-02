@@ -1,0 +1,104 @@
+---
+import { readData } from '../../lib/readData';
+import { getCollection } from 'astro:content';
+
+const siteConfig = readData('siteConfig.json');
+const theme = siteConfig.theme;
+const primaryColor = theme?.primary || '#2e38dc';
+const bgDark = theme?.bgDark || '#0b0d26';
+
+const latestPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).slice(0, 2);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+}
+---
+
+<footer class="footer-area bg-cover footer-area-3" style={`background: linear-gradient(135deg, ${primaryColor} 0%, ${bgDark} 100%) !important; position: relative;`}>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="widget widget_about">
+          <h4 class="widget-title">
+            <a href="/">
+              {siteConfig.logo ? (
+                <img src={siteConfig.logo} alt={siteConfig.name} style="max-height: 50px;" />
+              ) : (
+                <span class="text-logo">{siteConfig.name}</span>
+              )}
+            </a>
+          </h4>
+          <div class="details">
+            <p>{siteConfig.footer?.description || siteConfig.description}</p>
+            <ul class="social-media mt-4">
+              {siteConfig.social?.facebook && <li><a href={siteConfig.social.facebook}><i class="fab fa-facebook-f"></i></a></li>}
+              {siteConfig.social?.twitter && <li><a href={siteConfig.social.twitter}><i class="fab fa-twitter"></i></a></li>}
+              {siteConfig.social?.instagram && <li><a href={siteConfig.social.instagram}><i class="fab fa-instagram"></i></a></li>}
+              {siteConfig.social?.linkedin && <li><a href={siteConfig.social.linkedin}><i class="fab fa-linkedin-in"></i></a></li>}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="widget widget_nav_menu">
+          <h4 class="widget-title">Links Rápidos</h4>
+          <ul>
+            <li><a href="/">Página Inicial</a></li>
+            <li><a href="/sobre">Sobre Nós</a></li>
+            <li><a href="/servicos">Nossos Serviços</a></li>
+            <li><a href="/blog">Blog & Notícias</a></li>
+            <li><a href="/contato">Fale Conosco</a></li>
+            <li><a href="/privacidade">Política de Privacidade</a></li>
+            <li><a href="/termos">Termos de Uso</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-12">
+        <div class="widget widget-recent-post">
+          <h4 class="widget-title">Notícias Recentes</h4>
+          <ul>
+            {latestPosts.map((post, index) => (
+              <li class={index > 0 ? "mt-3" : ""}>
+                <div class="media">
+                  <div class="media-left">
+                    <img src={post.data.heroImage || "/itechie-assets/img/blog/1.webp"} alt={post.data.title} style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;" />
+                  </div>
+                  <div class="media-body align-self-center">
+                    <h6 class="title"><a href={`/blog/${post.slug}`}>{post.data.title}</a></h6>
+                    <div class="post-info"><i class="far fa-calendar-alt"></i> <span>{formatDate(post.data.pubDate)}</span></div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 align-self-center">
+          <p>© {new Date().getFullYear()} {siteConfig.footer?.copyright || siteConfig.name}.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .text-logo {
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    display: inline-block;
+  }
+</style>

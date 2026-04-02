@@ -1,0 +1,68 @@
+---
+import { readData } from '../../../lib/readData';
+const servicosData = readData('servicos.json');
+const { data = servicosData.serviceArea } = Astro.props;
+const serviceArea = data || { items: [] };
+---
+
+<div class="service-area pd-top-120 pd-bottom-90">
+   <div class="container">
+      <div class="row justify-content-center">
+         <div class="col-lg-7">
+            <div class="section-title text-center">
+               <h5 class="sub-title double-line">{servicosData.serviceArea?.subtitle || "Nossas Especialidades"}</h5>
+               <h2 class="title">{servicosData.serviceArea?.title || "Soluções Estratégicas"}</h2>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         {serviceArea.items?.map((item: any) => (
+            <div class="col-lg-4 col-md-6">
+               <div class="single-service-inner style-hover-base text-center">
+                  <div class="icon-box">
+                     <i class={item.icon}></i>
+                  </div>
+                  <div class="details">
+                     <h3><a href={`/servico/${item.slug}`}>{item.title}</a></h3>
+                     <p>{item.desc}</p>
+                  </div>
+               </div>
+            </div>
+         ))}
+      </div>
+   </div>
+</div>
+
+<style>
+  .single-service-inner {
+    padding: 50px 30px;
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    margin-bottom: 30px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+  }
+  .single-service-inner:hover {
+    border-color: var(--main-color);
+    transform: translateY(-10px);
+  }
+  .icon-box {
+    font-size: 50px;
+    color: var(--main-color);
+    margin-bottom: 25px;
+  }
+  .details h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  .single-service-inner:hover .details h3 a,
+  .single-service-inner:hover .details p,
+  .single-service-inner:hover .icon-box {
+    color: #fff !important;
+  }
+  .single-service-inner:hover {
+    background: var(--main-color);
+  }
+</style>

@@ -1,0 +1,333 @@
+---
+import { getCollection } from 'astro:content';
+import { readData } from '../../lib/readData';
+import { slugify } from '../../lib/slugify';
+
+const siteConfig = readData('siteConfig.json');
+const menuItems = readData('menu.json', { items: [] }).items || [];
+
+const categoriesData = readData('categories.json', []);
+const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
+const allCategories = finalCategoriesData; 
+
+const servicosData = readData('servicos.json', { serviceArea: { items: [] } });
+const allServices = servicosData?.serviceArea?.items || [];
+---
+
+<header>
+  <div class="navbar-top style-2">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 d-lg-inline-block d-none">
+          <div class="logo">
+            <a href="/">
+              {siteConfig.logo ? (
+                <img src={siteConfig.logo} alt={siteConfig.name} />
+              ) : (
+                <span class="text-logo">{siteConfig.name}</span>
+              )}
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-5 align-self-center">
+          <div class="media">
+            <div class="media-left">
+              <i class="far fa-clock"></i>
+            </div>
+            <div class="media-body">
+              <h6>Horário de Atendimento</h6>
+              <p>{siteConfig.header?.businessHours || 'Seg - Sex || 08:00 - 18:00'}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-5 align-self-center">
+          <div class="media">
+            <div class="media-left">
+              <i class="far fa-envelope"></i>
+            </div>
+            <div class="media-body">
+              <h6>E-mail de Contato</h6>
+              <p>{siteConfig.contact?.email || 'info@itechie.com'}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 d-lg-block d-none align-self-center">
+          <div class="social-media-light text-md-end text-center">
+            {siteConfig.social?.facebook && <a href={siteConfig.social.facebook}><i class="fab fa-facebook-f"></i></a>}
+            {siteConfig.social?.twitter && <a href={siteConfig.social.twitter}><i class="fab fa-twitter"></i></a>}
+            {siteConfig.social?.instagram && <a href={siteConfig.social.instagram}><i class="fab fa-instagram"></i></a>}
+            {siteConfig.social?.linkedin && <a href={siteConfig.social.linkedin}><i class="fab fa-linkedin-in"></i></a>}
+            {siteConfig.social?.youtube && <a href={siteConfig.social.youtube}><i class="fab fa-youtube"></i></a>}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-area navbar-area-2 navbar-expand-lg bg-main-base" id="itechie-navbar">
+    <div class="container nav-container">
+<!-- Mobile menu removed to fix stray T -->
+      <div class="logo d-inline-block d-lg-none">
+        <a href="/">
+          {siteConfig.logo ? (
+            <img src={siteConfig.logo} alt={siteConfig.name} />
+          ) : (
+            <span class="text-logo">{siteConfig.name}</span>
+          )}
+        </a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="itechie_main_menu">
+        <ul class="navbar-nav">
+          {menuItems && menuItems.map((item: any) => {
+            const hasSubmenu = (item.items && item.items.length > 0) || (item.showCategories && allCategories.length > 0) || (item.showServices && allServices.length > 0);
+            return (
+              <li class={hasSubmenu ? "menu-item-has-children" : ""}>
+                <a href={item.href}>{item.label}</a>
+                {hasSubmenu && (
+                  <ul class="sub-menu">
+                    {item.items?.map((subItem: any) => (
+                      <li><a href={subItem.href}>{subItem.label}</a></li>
+                    ))}
+                    {item.showCategories && allCategories.map((cat: any) => (
+                        <li><a href={`/categoria/${slugify(cat)}`}>{cat}</a></li>
+                    ))}
+                    {item.showServices && allServices.map((service: any) => (
+                      <li><a href={`/servico/${service.slug}`}>{service.title}</a></li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div class="nav-right-part nav-right-part-desktop">
+        <a class="it-btn btn-black btn-block-height" href={siteConfig.header?.ctaLink || "/contato"}>{siteConfig.header?.ctaText || "Começar Agora"}</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script is:inline>
+  const navbar = document.getElementById('itechie-navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+      navbar.classList.add('sticky-active');
+    } else {
+      navbar.classList.remove('sticky-active');
+    }
+  });
+
+  // Mobile menu logic removed
+</script>
+
+<style>
+  .navbar-top.style-2 {
+    padding: 15px 0 !important;
+    background: #fff !important;
+  }
+  .navbar-top.style-2 .logo img {
+    max-height: 55px;
+  }
+  .navbar-top .media .media-left i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 15px;
+  }
+  .navbar-top .media .media-body h6 {
+    margin-bottom: 0px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .navbar-top .media .media-body p {
+    margin-bottom: 0;
+    font-size: 13px;
+    color: #666;
+  }
+  .navbar-top .social-media-light a {
+    background: #111;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    display: inline-block;
+    border-radius: 50%;
+    text-align: center;
+    margin-left: 5px;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .navbar-top .social-media-light a:hover {
+    background: var(--main-color);
+  }
+
+  /* BARRA DE NAVEGAÇÃO AZUL */
+  .navbar-area-2 {
+    background: var(--main-color) !important;
+    padding: 0 !important;
+  }
+  .nav-container {
+    height: 80px; 
+    display: flex;
+    align-items: center;
+  }
+  .navbar-collapse {
+    height: 100%;
+  }
+  @media (min-width: 992px) {
+    .navbar-collapse {
+      display: flex !important;
+    }
+  }
+  .navbar-nav {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-direction: row !important;
+  }
+  .navbar-nav li {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .navbar-nav li a {
+    color: #fff !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    text-transform: capitalize;
+    padding: 0 20px !important;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .navbar-nav li:hover > a {
+    background: rgba(0,0,0,0.1);
+  }
+
+  /* DROPDOWN */
+  .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 250px;
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 15px 0;
+    margin: 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border-radius: 0 0 10px 10px;
+    z-index: 999;
+    transform: translateY(10px);
+  }
+  .navbar-nav li:hover .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .sub-menu li {
+    height: auto !important;
+    display: block !important;
+    width: 100%;
+  }
+  .sub-menu li a {
+    color: #333 !important;
+    padding: 12px 25px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    display: block !important;
+    height: auto !important;
+    background: transparent !important;
+  }
+  .sub-menu li a:hover {
+    color: var(--main-color) !important;
+    background: #f4f4ff !important;
+  }
+
+  /* ARROW */
+  .menu-item-has-children > a:after {
+    content: "\f107";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-left: 8px;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+  .menu-item-has-children:hover > a:after {
+    transform: rotate(180deg);
+  }
+
+  /* BOTÃO CTA */
+  .btn-block-height {
+    height: 80px !important;
+    line-height: 25px !important; /* Ajuste para centralizar texto */
+    padding: 0 35px !important;
+    border-radius: 0 !important;
+    background: #111111 !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center;
+    border: none !important;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .btn-block-height:hover {
+    background: #000 !important;
+  }
+
+  .nav-right-part-desktop {
+    margin-right: -15px;
+    height: 80px;
+  }
+
+  @media (min-width: 992px) {
+    .responsive-mobile-menu, 
+    #mobile-menu-toggle,
+    .responsive-mobile-menu *,
+    .toggle-btn {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      top: -9999px !important;
+    }
+  }
+
+  .sticky-active {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .text-logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--main-color);
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1;
+    display: inline-block;
+  }
+  .navbar-area-2 .text-logo {
+      color: #fff;
+      font-size: 24px;
+  }
+</style>

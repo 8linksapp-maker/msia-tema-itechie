@@ -1,0 +1,232 @@
+---
+import Header from '../components/itechie/Header.astro';
+import Footer from '../components/itechie/Footer.astro';
+import { readData } from '../lib/readData';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const siteConfig = readData('siteConfig.json');
+const { title = siteConfig.name, description = siteConfig.description } = Astro.props;
+const formattedTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
+
+function hexToRgb(hex: string) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '46, 56, 220';
+}
+
+function hexToHue(hex: string) {
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 4) {
+    r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16);
+  } else {
+    r = parseInt(hex[1] + hex[2], 16); g = parseInt(hex[3] + hex[4], 16); b = parseInt(hex[5] + hex[6], 16);
+  }
+  r /= 255; g /= 255; b /= 255;
+  let max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s, l = (max + min) / 2;
+  if (max === min) { h = s = 0; } else {
+    let d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return Math.round(h * 360);
+}
+
+const theme = siteConfig.theme;
+const primaryRgb = hexToRgb(theme?.primary || '#2e38dc');
+const secondaryRgb = hexToRgb(theme?.secondary || '#111111');
+const bgDarkRgb = hexToRgb(theme?.bgDark || '#0b0d26');
+const mainHue = hexToHue(theme?.primary || '#2e38dc');
+
+// Filtro de Precisão: Transforma Azul #2e38dc em CMS Primary
+// 1. brightness(0) -> Preto
+// 2. invert(1) -> Branco (ou inverter para matiz alvo)
+// 3. sepia(1) saturate(5) hue-rotate(...) -> Cor Alvo
+const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5) hue-rotate(${mainHue - 50}deg)`;
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{formattedTitle}</title>
+  <meta name="description" content={description}>
+  <link rel="icon" type="image/webp" href="/favicon.webp" />
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Rubik:wght@400;500;600;700&display=swap" />
+
+  <!-- CSS Assets -->
+  <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/animate.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/custom-icon.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/nice-select.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/magnific.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/slick.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/owl.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/style.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/responsive.css" />
+
+  <style is:global define:vars={{ 
+    primaryColor: theme?.primary || '#2e38dc',
+    secondaryColor: theme?.secondary || '#0b0d26',
+    accentColor: theme?.accent || '#007bff',
+    bgDark: theme?.bgDark || '#0b0d26',
+    bgLight: theme?.bgLight || '#f4f4ff',
+    textOnPrimary: theme?.textOnPrimary || '#ffffff',
+    primaryRgb: primaryRgb || '46, 56, 220',
+    secondaryRgb: secondaryRgb || '17, 17, 17',
+    bgDarkRgb: bgDarkRgb || '11, 13, 38',
+    mainHue: mainHue,
+    shapeFilter: shapeFilter
+  }}>
+    :root {
+      --main-color: var(--primaryColor);
+      --main-color-rgb: var(--primaryRgb);
+      --main-color-hue: var(--mainHue);
+      --main-color-filter: var(--shapeFilter);
+      --secondary-color: var(--secondaryColor);
+      --secondary-color-rgb: var(--secondaryRgb);
+      --accent-color: var(--accentColor);
+      --bg-dark: var(--bgDark);
+      --bg-dark-rgb: var(--bgDarkRgb);
+      --bg-light: var(--bgLight);
+      --text-on-primary: var(--textOnPrimary);
+      --color-primary: var(--primaryColor);
+    }
+
+    /* Utilitários de Cor de Fundo */
+    .bg-main-base { background-color: var(--main-color) !important; }
+    .bg-dark-base { background-color: var(--bg-dark) !important; }
+    .bg-light-base { background-color: var(--bg-light) !important; }
+    .bg-sky-blue { background-color: var(--bg-light); }
+    
+    /* Máscara Dinâmica para Shapes (SUBSTITUI FILTROS BUGADOS) */
+    .mask-primary {
+      background-color: var(--main-color) !important;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+    }
+    .mask-secondary {
+       background-color: var(--secondary-color) !important;
+    }
+    .mask-opacity {
+       opacity: 0.15 !important;
+    }
+    .pd-top-120 { padding-top: 120px; }
+    .pd-bottom-90 { padding-bottom: 90px; }
+    .pd-top-115 { padding-top: 115px; }
+    .pd-top-90 { padding-top: 90px; }
+    .pd-bottom-120 { padding-bottom: 120px; }
+    .mg-top--100 { margin-top: -100px; z-index: 2; position: relative; }
+
+    /* Button Padding & Style Fix */
+    .it-btn, .btn-base, .btn-black {
+      padding: 12px 30px !important;
+      display: inline-block;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.4s ease;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .btn-black {
+      background: #000 !important;
+      color: #fff !important;
+    }
+    .btn-black:hover {
+      background: var(--color-primary) !important;
+    }
+
+    /* Progress Bar Styles */
+    .single-progressbar {
+      margin-bottom: 25px;
+    }
+    .single-progressbar h6 {
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .progress-item {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 10px;
+      position: relative;
+    }
+    .progress-rate {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: 10px;
+      position: relative;
+      transition: width 2s ease-in-out;
+    }
+    .progress-count-wrap {
+      position: absolute;
+      right: 0;
+      top: -30px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Header Nav Fix - Moved to Header.astro */
+  </style>
+  <style is:global>
+    /* REMOVER O "T" FANTASMA QUE APARECE NO MENU */
+    @media (min-width: 992px) {
+      .responsive-mobile-menu, 
+      .toggle-btn, 
+      .icon-left, 
+      .icon-right, 
+      #mobile-menu-toggle,
+      .navbar-nav li:before,
+      .navbar-nav li:after,
+      .navbar-nav li.menu-item-has-children:before,
+      .navbar-nav li.menu-item-has-children:after {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        content: none !important;
+        background: transparent !important;
+        position: absolute !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        top: -9999px !important;
+      }
+    }
+  </style>
+</head>
+<body class="sc5">
+  
+  <Header />
+
+  <main>
+    <slot />
+  </main>
+
+  <Footer />
+
+  <!-- ALL JavaScript files -->
+  <script is:inline src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/jquery-nice-select@1.1.0/js/jquery.nice-select.min.js"></script>
+  <script is:inline src="/js/jquery.sticky-sidebar.min.js"></script>
+  <script is:inline src="/js/custom.js"></script>
+</body>
+</html>

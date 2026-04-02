@@ -1,0 +1,35 @@
+---
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import AboutSocial from '../components/itechie/home-one/About.astro';
+import ChooseArea from '../components/itechie/home-one/ChooseArea.astro';
+import Counter from '../components/itechie/home-three/Counter.astro';
+import FAQ from '../components/itechie/home-one/FAQ.astro';
+import Team from '../components/itechie/home-three/Team.astro';
+import Testimonial from '../components/itechie/about-page/Testimonial.astro';
+import SkillArea from '../components/itechie/about-page/SkillArea.astro';
+import Blog from '../components/itechie/home-one/Blog.astro';
+import CtaArea from '../components/itechie/common/CtaArea.astro';
+
+import { readData } from '../lib/readData';
+const sobreData = readData('sobre.json');
+---
+
+<ItechieLayout title={sobreData.breadcrumb?.title || "Sobre Nós"}>
+  <Breadcrumb title={sobreData.breadcrumb?.title || "Sobre Nós"} subTitle={sobreData.breadcrumb?.subtitle || "Sobre Nós"} />
+  
+  <AboutSocial />
+  
+  <ChooseArea />
+  
+  <Counter />
+  
+  <FAQ />
+  
+  <Team />
+  
+  <SkillArea />
+  
+  <CtaArea />
+  
+</ItechieLayout>
