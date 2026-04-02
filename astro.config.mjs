@@ -8,9 +8,9 @@ export default defineConfig({
     adapter: vercel(),
     image: {
         remotePatterns: [
-            { protocol: 'https', hostname: '**' },
-            { protocol: 'http', hostname: 'localhost' },
-            { protocol: 'http', hostname: '127.0.0.1' }
+            { protocol: 'https', hostname: 'images.unsplash.com' },
+            { protocol: 'https', hostname: 'itmaster.8links.com.br' },
+            { protocol: 'http', hostname: 'localhost' }
         ],
     },
     integrations: [
