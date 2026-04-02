@@ -102,8 +102,8 @@ export const GET: APIRoute = async ({ request }) => {
         const current = versionData.version || '1.0.0';
         const hasUpdate = latestVersion !== current;
 
-        // Atualiza lastChecked
-        writeJson('version.json', { ...versionData, lastChecked: new Date().toISOString() });
+        // Nota: Removido writeJson aqui para evitar erro de filesystem read-only na Vercel
+        // writeJson('version.json', { ...versionData, lastChecked: new Date().toISOString() });
 
         return new Response(JSON.stringify({
             configured: true,
