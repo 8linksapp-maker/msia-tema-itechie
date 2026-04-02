@@ -143,8 +143,8 @@ export const POST: APIRoute = async ({ request }) => {
     const GITHUB_OWNER = import.meta.env.GITHUB_OWNER;
     const GITHUB_REPO = import.meta.env.GITHUB_REPO;
 
-    // Modo dev: apenas simula
-    const isDevMode = !GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO;
+    // Modo dev: apenas simula se não houver tokens E não estiver em produção
+    const isDevMode = (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) && !import.meta.env.PROD;
 
     const { releaseTag } = await request.json();
     if (!releaseTag) return new Response(JSON.stringify({ error: 'releaseTag é obrigatório' }), { status: 400 });
