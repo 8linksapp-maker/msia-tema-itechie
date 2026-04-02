@@ -86,11 +86,12 @@ const shapeFilter = `brightness(0) saturate(100%) invert(1) sepia(1) saturate(5)
     .banner-inner .title { font-size: 42px; color: #fff; font-family: var(--heading-font); font-weight: 700; line-height: 1.2; }
     @media (min-width: 992px) { .banner-inner .title { font-size: 60px; } }
   </style>
-
-  <!-- CSS Pesado (Deferred for PageSpeed) -->
-  <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="/itechie-assets/css/style.css" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="/itechie-assets/css/responsive.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" />
+  
+  <!-- CSS Essencial (Bloqueante mas o otimizado pelo Inline abaixo) -->
+  <link rel="stylesheet" href="/itechie-assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/style.css" />
+  <link rel="stylesheet" href="/itechie-assets/css/responsive.css" />
   
   <!-- CSS Plugins (Deferred for PageSpeed) -->
   <link rel="preload" href="/itechie-assets/css/animate.min.css" as="style" />
