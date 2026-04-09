@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle, Loader2 } from 'lucide-react';
+import { Save, AlertCircle, Loader2, Image as ImageIcon } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
-import ImageUpload from './ImageUpload';
 
 export default function ConfigEditor() {
     const [config, setConfig] = useState<any>(null);
@@ -10,6 +9,14 @@ export default function ConfigEditor() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [pendingLogo, setPendingLogo] = useState<File | null>(null);
+
+    const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve((reader.result?.toString() || '').split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
 
     useEffect(() => {
         githubApi('read', 'src/data/siteConfig.json')
@@ -21,10 +28,20 @@ export default function ConfigEditor() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true); setError('');
+        triggerToast('Sincronizando configurações...', 'progress', 20);
         try {
-            const res = await githubApi('write', 'src/data/siteConfig.json', { content: JSON.stringify(config, null, 2), sha: fileSha, message: 'CMS: Update siteConfig.json' });
-            setFileSha(res.sha);
-            triggerToast('Configurações salvas com sucesso!', 'success');
+            let configCopy = { ...config };
+            if (pendingLogo) {
+                triggerToast('Enviando novo logo...', 'progress', 30);
+                const base64Content = await fileToBase64(pendingLogo);
+                const fileExt = pendingLogo.name.split('.').pop() || 'png';
+                const ghPath = `public/uploads/${Date.now()}-logo.${fileExt}`;
+                await githubApi('write', ghPath, { content: base64Content, isBase64: true, message: 'CMS: Upload Logo' });
+                configCopy.logo = ghPath.replace('public', '');
+            }
+            const res = await githubApi('write', 'src/data/siteConfig.json', { content: JSON.stringify(configCopy, null, 2), sha: fileSha, message: 'CMS: Update siteConfig.json' });
+            setFileSha(res.sha); setPendingLogo(null);
+            triggerToast('Configurações salvas com sucesso!', 'success', 100);
         } catch (err: any) {
             setError(err.message); triggerToast(`Erro: ${err.message}`, 'error');
         } finally { setSaving(false); }
@@ -37,21 +54,28 @@ export default function ConfigEditor() {
         </div>
     );
 
+    if (error && !config) return (
+        <div className="bg-red-50 text-red-700 p-8 rounded-3xl border border-red-200 flex gap-4 items-start">
+            <AlertCircle className="w-8 h-8 shrink-0" />
+            <div><h3 className="text-xl font-bold mb-2">Erro de Leitura</h3><p>{error}</p></div>
+        </div>
+    );
+
     const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm text-slate-800 font-medium";
     const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
 
     const presetThemes = [
-        { name: 'Deep Tech (Original)', primary: '#2e38dc', secondary: '#0b0d26', accent: '#007bff', bgDark: '#0b0d26', bgLight: '#f4f4ff', textOnPrimary: '#ffffff' },
-        { name: 'Modern SaaS', primary: '#3b82f6', secondary: '#0f172a', accent: '#10b981', bgDark: '#0f172a', bgLight: '#f8fafc', textOnPrimary: '#ffffff' },
-        { name: 'Cyberpunk', primary: '#7c3aed', secondary: '#1e1b4b', accent: '#f43f5e', bgDark: '#1e1b4b', bgLight: '#faf5ff', textOnPrimary: '#ffffff' },
-        { name: 'Eco Growth', primary: '#10b981', secondary: '#064e3b', accent: '#84cc16', bgDark: '#064e3b', bgLight: '#f0fdf4', textOnPrimary: '#ffffff' },
-        { name: 'Premium Gold', primary: '#d4af37', secondary: '#1a1a1a', accent: '#ffffff', bgDark: '#000000', bgLight: '#fcfcfc', textOnPrimary: '#000000' },
-        { name: 'Midnight Blue', primary: '#1e40af', secondary: '#1e1b4b', accent: '#38bdf8', bgDark: '#0f172a', bgLight: '#eff6ff', textOnPrimary: '#ffffff' },
-        { name: 'Sunset Orange', primary: '#f97316', secondary: '#431407', accent: '#fca5a5', bgDark: '#431407', bgLight: '#fff7ed', textOnPrimary: '#ffffff' },
+        { name: 'Rosa Original', primary: '#FE4F70', accent: '#FFA387', dark: '#203656' },
+        { name: 'Oceano',        primary: '#2196F3', accent: '#64B5F6', dark: '#0D2137' },
+        { name: 'Floresta',      primary: '#4CAF50', accent: '#81C784', dark: '#1B3A2A' },
+        { name: 'Sunset',        primary: '#FF5722', accent: '#FFAB91', dark: '#4A1A0A' },
+        { name: 'Roxo Elegante', primary: '#7C3AED', accent: '#A78BFA', dark: '#2D1060' },
+        { name: 'Dourado',       primary: '#D4A017', accent: '#F0D060', dark: '#3D2A00' },
     ];
 
     return (
         <form onSubmit={handleSave} className="space-y-8 pb-32 max-w-3xl">
+            {/* Action Bar */}
             <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
                     <h2 className="text-lg font-bold text-slate-800">Configurações Gerais</h2>
@@ -65,115 +89,110 @@ export default function ConfigEditor() {
 
             {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200 flex gap-3"><AlertCircle className="w-5 h-5 shrink-0" /> {error}</div>}
 
+            {/* Identidade */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Identidade & Cores</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Identidade Base</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="md:col-span-2 flex flex-col sm:flex-row gap-8 items-start border-b border-slate-50 pb-8">
+                    <div className="md:col-span-2 flex flex-col sm:flex-row gap-8 items-start">
                         <div className="w-full sm:w-1/3">
-                            <ImageUpload label="Logo Principal" value={config?.logo} onChange={(url) => setConfig({ ...config, logo: url })} />
+                            <label className={labelClass}>Logo Principal</label>
+                            <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
+                                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) { setPendingLogo(file); setConfig({ ...config, logo: URL.createObjectURL(file) }); }
+                                }} />
+                                {config?.logo ? (
+                                    <img src={config.logo} alt="Logo" className="max-h-24 w-auto object-contain mb-4 group-hover:scale-105 transition-transform" />
+                                ) : (
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-300 shadow-sm mb-3 group-hover:text-violet-500 transition-colors">
+                                        <ImageIcon className="w-8 h-8" />
+                                    </div>
+                                )}
+                                <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700 transition-colors">
+                                    {config?.logo ? 'Trocar Logo' : 'Enviar Logo (PNG/SVG)'}
+                                </span>
+                            </label>
                         </div>
                         <div className="w-full sm:w-2/3 space-y-6">
                             <div>
                                 <label className={labelClass}>Nome do Site / Empresa</label>
                                 <input type="text" value={config?.name || ''} onChange={e => setConfig({ ...config, name: e.target.value })} className={inputClass} />
                             </div>
+                            {/* Preset Themes */}
                             <div>
-                                <label className={labelClass}>Temas e Paletas Prontas</label>
-                                <div className="grid grid-cols-2 gap-2">
+                                <label className={labelClass}>Temas Prontos</label>
+                                <div className="flex flex-wrap gap-2">
                                     {presetThemes.map(preset => (
                                         <button
                                             key={preset.name}
                                             type="button"
-                                            onClick={() => setConfig({ ...config, theme: { ...config.theme, ...preset } })}
-                                            className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50 transition-all text-left"
+                                            onClick={() => setConfig({ ...config, theme: { ...config.theme, primary: preset.primary, accent: preset.accent, dark: preset.dark } })}
+                                            className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50 transition-all text-sm font-semibold text-slate-700"
                                         >
-                                            <div className="flex gap-1.5">
-                                                <span className="w-5 h-5 rounded-full border border-white shadow-sm" style={{ background: preset.primary }} title="Primária" />
-                                                <span className="w-5 h-5 rounded-full border border-white shadow-sm" style={{ background: preset.secondary }} title="Secundária" />
-                                                <span className="w-5 h-5 rounded-full border border-white shadow-sm" style={{ background: preset.accent }} title="Acento" />
-                                            </div>
-                                            <span className="text-[10px] font-bold uppercase tracking-tight text-slate-500">{preset.name}</span>
+                                            <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.primary }} />
+                                            <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.accent }} />
+                                            {preset.name}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className={labelClass}>Personalização Livre da Paleta</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-                            {[
-                                { key: 'primary', label: 'Cor Primária', desc: 'Botões e Links' },
-                                { key: 'secondary', label: 'Cor Secundária', desc: 'Elementos de Apoio' },
-                                { key: 'accent', label: 'Cor de Destaque', desc: 'Pontos de Atenção' },
-                                { key: 'bgDark', label: 'Fundo Escuro', desc: 'Header/Footer' },
-                                { key: 'bgLight', label: 'Fundo Claro', desc: 'Seções Secundárias' },
-                                { key: 'textOnPrimary', label: 'Texto sobre Primária', desc: 'Contraste do Botão' },
-                            ].map(f => (
-                                <div key={f.key} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-3">{f.label}</label>
-                                    <div className="flex items-center gap-3">
-                                        <input
-                                            type="color"
-                                            value={config?.theme?.[f.key] || '#000000'}
-                                            onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })}
-                                            className="h-12 w-12 p-1 border-0 rounded-full cursor-pointer bg-white shadow-sm"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={config?.theme?.[f.key] || ''}
-                                            onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })}
-                                            className="w-full bg-transparent border-none focus:outline-none font-mono text-sm text-slate-700 font-bold"
-                                        />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {[
+                                    { key: 'primary', label: 'Cor Primária' },
+                                    { key: 'accent', label: 'Cor de Destaque' },
+                                ].map(f => (
+                                    <div key={f.key}>
+                                        <label className={labelClass}>{f.label}</label>
+                                        <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                            <input type="color" value={config?.theme?.[f.key] || '#000000'} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
+                                            <input type="text" value={config?.theme?.[f.key] || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
+                                        </div>
                                     </div>
-                                    <p className="text-[10px] text-slate-400 mt-2 italic">{f.desc}</p>
+                                ))}
+                            </div>
+                            {/* Live Preview */}
+                            {(config?.theme?.primary || config?.theme?.accent) && (
+                                <div>
+                                    <label className={labelClass}>Preview</label>
+                                    <div
+                                        className="h-14 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-sm"
+                                        style={{ background: `linear-gradient(to right, ${config?.theme?.primary || '#FE4F70'} 0%, ${config?.theme?.accent || '#FFA387'} 100%)` }}
+                                    >
+                                        Botões · Destaques · Categorias
+                                    </div>
                                 </div>
-                            ))}
+                            )}
+                            <div>
+                                <label className={labelClass}>Combinação de Fontes</label>
+                                <select value={config?.theme?.font || 'outfit'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className={inputClass}>
+                                    <option value="inter">Inter & Roboto Mono (Moderno / Tech)</option>
+                                    <option value="outfit">Outfit & Inter (Clean / SaaS)</option>
+                                    <option value="roboto">Roboto & Open Sans (Corporativo / Neutro)</option>
+                                    <option value="poppins">Poppins & Lora (Criativo / Boutique)</option>
+                                    <option value="montserrat">Montserrat & Merriweather (Profissional / Textual)</option>
+                                    <option value="playfair">Playfair Display & Source Sans (Elegante / Editorial)</option>
+                                    <option value="lora">Lora & Merriweather (Revista / Narrativa)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-
-                    <div className="md:col-span-2">
-                        <label className={labelClass}>Combinação de Fontes</label>
-                        <select value={config?.theme?.font || 'outfit'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className={inputClass}>
-                            <option value="inter">Inter & Roboto Mono (Moderno / Tech)</option>
-                            <option value="outfit">Outfit & Inter (Clean / SaaS)</option>
-                            <option value="roboto">Roboto & Open Sans (Corporativo / Neutro)</option>
-                            <option value="poppins">Poppins & Lora (Criativo / Boutique)</option>
-                            <option value="montserrat">Montserrat & Merriweather (Profissional / Textual)</option>
-                            <option value="playfair">Playfair Display & Source Sans (Elegante / Editorial)</option>
-                            <option value="lora">Lora & Merriweather (Revista / Narrativa)</option>
-                        </select>
-                    </div>
                 </div>
             </div>
 
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Cabeçalho (Header)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                        <label className={labelClass}>Horário de Atendimento (Top Bar)</label>
-                        <input type="text" placeholder="Seg - Sex || 08:00 - 18:00" value={config?.header?.businessHours || ''} onChange={e => setConfig({ ...config, header: { ...config.header, businessHours: e.target.value } })} className={inputClass} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Botão de Ação (Texto)</label>
-                        <input type="text" placeholder="Começar Agora" value={config?.header?.ctaText || ''} onChange={e => setConfig({ ...config, header: { ...config.header, ctaText: e.target.value } })} className={inputClass} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Botão de Ação (Link)</label>
-                        <input type="text" placeholder="/contato" value={config?.header?.ctaLink || ''} onChange={e => setConfig({ ...config, header: { ...config.header, ctaLink: e.target.value } })} className={inputClass} />
-                    </div>
-                </div>
-            </div>
-
+            {/* Informações de Contato */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Informações de Contato</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+                    {/* URL do site — nível raiz do siteConfig */}
+                    <div>
+                        <label className={labelClass}>URL do Site</label>
+                        <input type="text" placeholder="https://seusite.com.br" value={config?.url || ''} onChange={e => setConfig({ ...config, url: e.target.value })} className={inputClass} />
+                    </div>
+                    {/* email, phone, address — dentro de contact{} */}
                     {[
-                        { key: 'email', label: 'E-mail', placeholder: 'contato@seusite.com' },
-                        { key: 'phone', label: 'Telefone / WhatsApp', placeholder: '(11) 99999-9999' },
-                        { key: 'address', label: 'Endereço', placeholder: 'Rua X, 123 — Cidade/UF' },
+                        { key: 'email',   label: 'E-mail',              placeholder: 'contato@seusite.com' },
+                        { key: 'phone',   label: 'Telefone / WhatsApp', placeholder: '(11) 99999-9999' },
+                        { key: 'address', label: 'Endereço',            placeholder: 'Rua X, 123 — Cidade/UF' },
                     ].map(f => (
                         <div key={f.key}>
                             <label className={labelClass}>{f.label}</label>
@@ -189,8 +208,9 @@ export default function ConfigEditor() {
                 </div>
             </div>
 
+            {/* Redes Sociais */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Redes Sociais</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Redes Sociais (Rodapé)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {['instagram', 'twitter', 'linkedin', 'github', 'youtube', 'facebook'].map(social => (
                         <div key={social}>
@@ -201,44 +221,36 @@ export default function ConfigEditor() {
                 </div>
             </div>
 
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Rodapé (Footer)</h3>
-                <div className="grid grid-cols-1 gap-6">
-                    <div>
-                        <label className={labelClass}>Frase Institucional (Footer)</label>
-                        <textarea
-                            rows={3}
-                            placeholder="Frase que aparece abaixo do logo no rodapé..."
-                            value={config?.footer?.description || ''}
-                            onChange={e => setConfig({ ...config, footer: { ...config.footer, description: e.target.value } })}
-                            className={`${inputClass} resize-y`}
-                        />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Texto de Copyright</label>
-                        <input
-                            type="text"
-                            placeholder="Todos os direitos reservados à Sua Empresa"
-                            value={config?.footer?.copyright || ''}
-                            onChange={e => setConfig({ ...config, footer: { ...config.footer, copyright: e.target.value } })}
-                            className={inputClass}
-                        />
-                    </div>
-                    <div>
-                        <ImageUpload
-                            label="Imagem de Fundo do Rodapé"
-                            value={config?.footer?.backgroundImage}
-                            onChange={(url) => setConfig({ ...config, footer: { ...config.footer, backgroundImage: url } })}
-                        />
-                    </div>
-                </div>
-            </div>
-
+            {/* SEO Global */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">SEO Global</h3>
                 <div className="space-y-4">
                     <div><label className={labelClass}>Título Padrão (SEO)</label><input type="text" value={config?.seo?.title || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, title: e.target.value } })} className={inputClass} /></div>
                     <div><label className={labelClass}>Descrição Padrão</label><textarea rows={3} value={config?.seo?.description || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
+                </div>
+            </div>
+
+            {/* Sitemap */}
+            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Sitemap</h3>
+                <div className="space-y-4">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                        <p className="text-sm font-bold text-emerald-700 mb-1">Sitemap XML gerado automaticamente</p>
+                        <p className="text-xs text-emerald-600 mb-3">O sitemap é atualizado a cada build/deploy com todas as páginas e posts do site.</p>
+                        {config?.url ? (
+                            <div className="space-y-2">
+                                <a href={`${config.url.replace(/\/$/, '')}/sitemap-index.xml`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 bg-white px-4 py-2 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                    {config.url.replace(/\/$/, '')}/sitemap-index.xml
+                                </a>
+                                <p className="text-xs text-slate-500">Use esta URL no Google Search Console para enviar seu sitemap.</p>
+                            </div>
+                        ) : (
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                <p className="text-xs text-amber-700 font-medium">Configure a URL do Site acima para ver o link do sitemap.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </form>
