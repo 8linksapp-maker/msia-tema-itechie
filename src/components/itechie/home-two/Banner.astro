@@ -27,7 +27,7 @@ const bgUrl = hero.backgroundImage || "/itechie-assets/img/banner/bg-real.webp";
       <div class="col-lg-7 col-md-10">
         <div class="banner-inner">
           <h4 class="sub-title">{hero.subtitle}</h4>
-          <h2 class="title" set:html={hero.title.replace('<span>', '<span style="color:var(--main-color);">')}></h2>
+          <h1 class="title" set:html={hero.title.replace('<span>', '<span style="color:var(--main-color);">')}></h1>
           <p class="content">{hero.description || "Focamos em resultados reais através de tráfego pago, SEO e design de conversão."}</p>
           <div class="btn-wrap banner-2-btn">
             {hero.btnLeft?.text && <a class="it-btn btn-base" href={hero.btnLeft.link}>{hero.btnLeft.text}</a>}
