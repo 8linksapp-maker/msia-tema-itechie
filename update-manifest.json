@@ -1,8 +1,19 @@
 {
-    "version": "1.0.8",
+    "version": "1.1.0",
     "files": [
-        "src/components/admin/ConfigEditor.tsx",
+        "src/components/itechie/home-two/Banner.astro",
+        "src/pages/api/admin/github.ts",
+        "src/pages/api/admin/logout.ts",
+        "src/pages/api/admin/system-updates.ts",
+        "src/pages/api/admin/deploy-status.ts",
+        "src/pages/admin/system-updates.astro",
+        "src/plugins/updater/SystemUpdater.tsx",
+        "src/plugins/updater/DeployStatus.tsx",
+        "src/plugins/updater/UpdateBanner.tsx",
+        "src/components/admin/AdminNav.tsx",
+        "src/layouts/AdminLayout.astro",
+        "astro.config.mjs",
         "src/data/version.json"
     ],
-    "note": "Nova paleta de cores Sunset Orange adicionada ao painel de configurações!"
+    "note": "v1.1.0: H1 na home (SEO), cache GitHub API (previne rate limit), fix logout, deploy status banner, sitemap automático, sistema de updates unificado"
 }
