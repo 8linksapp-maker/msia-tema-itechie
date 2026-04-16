@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, Loader2, Plus, Trash2, UserPlus, Image as ImageIcon, Users, X, Edit2 } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
-import ImageUpload from './ImageUpload';
 
 export default function AuthorsEditor() {
     const [authors, setAuthors] = useState<any[]>([]);
@@ -17,7 +16,7 @@ export default function AuthorsEditor() {
     useEffect(() => {
         githubApi('read', 'src/data/authors.json')
             .then(data => {
-                const parsed = JSON.parse(data.content);
+                const parsed = JSON.parse(data?.content || "{}");
                 setAuthors(Array.isArray(parsed) ? parsed : []);
                 setFileSha(data.sha);
             })
@@ -30,6 +29,7 @@ export default function AuthorsEditor() {
 
     const saveToGithub = async (list: any[]) => {
         setSaving(true); setError('');
+        triggerToast('Sincronizando arquivo de autores...', 'progress', 20);
         try {
             const data = await githubApi('write', 'src/data/authors.json', {
                 content: JSON.stringify(list, null, 2),
@@ -37,13 +37,21 @@ export default function AuthorsEditor() {
                 message: 'CMS: Update authors.json'
             });
             setFileSha(data.sha);
-            triggerToast('Equipe sincronizada com sucesso!', 'success');
+            triggerToast('Equipe sincronizada com sucesso!', 'success', 100);
         } catch (err: any) {
             setError(err.message);
             triggerToast(`Erro: ${err.message}`, 'error');
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setTempAuthor({ ...tempAuthor, avatar: reader.result as string });
+        reader.readAsDataURL(file);
     };
 
     const saveModalAuthor = async () => {
@@ -159,12 +167,22 @@ export default function AuthorsEditor() {
                             <button onClick={() => setIsModalOpen(false)} className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
                         </div>
                         <div className="p-6 overflow-y-auto max-h-[70vh] flex flex-col gap-6">
-                            <ImageUpload
-                                label="Foto de Perfil"
-                                value={tempAuthor.avatar}
-                                onChange={(url) => setTempAuthor({ ...tempAuthor, avatar: url })}
-                            />
-
+                            <label className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner bg-slate-100 flex flex-col items-center justify-center mx-auto relative group cursor-pointer">
+                                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                                {tempAuthor.avatar ? (
+                                    <>
+                                        <img src={tempAuthor.avatar} alt="Avatar" className="absolute inset-0 w-full h-full object-cover group-hover:opacity-40 transition-opacity" />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <ImageIcon className="w-8 h-8 text-slate-800 drop-shadow-md" />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center text-slate-400 group-hover:text-amber-500 transition-colors">
+                                        <ImageIcon className="w-8 h-8 mb-1" />
+                                        <span className="text-[9px] font-black uppercase tracking-wider">Upload PNG</span>
+                                    </div>
+                                )}
+                            </label>
                             <div className="space-y-4 w-full">
                                 {[
                                     { key: 'name', label: 'Nome Completo', placeholder: 'Ex: João da Silva', type: 'text' },

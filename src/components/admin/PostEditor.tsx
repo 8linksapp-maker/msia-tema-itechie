@@ -4,7 +4,6 @@ import { marked } from 'marked';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
 import SEOScoreWidget from '../../plugins/seo/SEOScoreWidget';
-import ImageUpload from './ImageUpload';
 
 interface PostEditorProps {
     filePath: string | null; // null = novo post
@@ -19,6 +18,7 @@ export default function PostEditor({ filePath }: PostEditorProps) {
     const [dynamicCategories, setDynamicCategories] = useState<string[]>([]);
     const [fileSha, setFileSha] = useState('');
     const [isPreview, setIsPreview] = useState(false);
+    const [pendingUploads, setPendingUploads] = useState<Record<string, File>>({});
     const [QuillEditor, setQuillEditor] = useState<any>(null);
 
     const formatDateForInput = (dateStr: string) => {
@@ -47,8 +47,8 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                     githubApi('read', 'src/data/authors.json'),
                     githubApi('read', 'src/data/categories.json'),
                 ]);
-                if (authRes.status === 'fulfilled') { const p = JSON.parse(authRes.value.content); if (Array.isArray(p)) setAuthors(p); }
-                if (catRes.status === 'fulfilled') { const p = JSON.parse(catRes.value.content); if (Array.isArray(p)) setDynamicCategories(p); }
+                if (authRes.status === 'fulfilled') { const p = JSON.parse(authRes.value?.content || "{}"); if (Array.isArray(p)) setAuthors(p); }
+                if (catRes.status === 'fulfilled') { const p = JSON.parse(catRes.value?.content || "{}"); if (Array.isArray(p)) setDynamicCategories(p); }
 
                 if (isEditing && filePath) {
                     const fileData = await githubApi('read', filePath);
@@ -83,6 +83,21 @@ export default function PostEditor({ filePath }: PostEditorProps) {
         setPost(p => ({ ...p, title: val, slug: isEditing ? p.slug : val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') }));
     };
 
+    const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, uiKey: string) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setPendingUploads(prev => ({ ...prev, [uiKey]: file }));
+        if (uiKey === 'heroImage') setPost(p => ({ ...p, heroImage: URL.createObjectURL(file) }));
+        e.target.value = '';
+    };
+
     const extractAndUploadInlineImages = async (html: string) => {
         const imgRegex = /<img[^>]+src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/g;
         let modifiedHtml = html;
@@ -102,12 +117,22 @@ export default function PostEditor({ filePath }: PostEditorProps) {
         setSaving(true); setError('');
         triggerToast('Processando e salvando artigo...', 'progress', 20);
         try {
+            let finalHeroImage = post.heroImage;
+            if (pendingUploads['heroImage']) {
+                const fileObj = pendingUploads['heroImage'];
+                const base64Content = await fileToBase64(fileObj);
+                const fileExt = fileObj.name.split('.').pop() || 'jpg';
+                const ghPath = `public/uploads/${Date.now()}-blog-cover.${fileExt}`;
+                await githubApi('write', ghPath, { content: base64Content, isBase64: true, message: `Upload capa blog ${ghPath}` });
+                finalHeroImage = ghPath.replace('public', '');
+            }
             const cleanedContent = post.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
             const finalHtmlContent = await extractAndUploadInlineImages(cleanedContent);
-            const markdown = `---\ntitle: "${post.title.replace(/"/g, '\\"')}"\ndescription: "${post.description.replace(/"/g, '\\"')}"\npubDate: "${post.pubDate}"\nheroImage: "${post.heroImage}"\ncategory: "${post.category}"\nauthor: "${post.author}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
+            const markdown = `---\ntitle: "${post.title.replace(/"/g, '\\"')}"\ndescription: "${post.description.replace(/"/g, '\\"')}"\npubDate: "${post.pubDate}"\nheroImage: "${finalHeroImage}"\ncategory: "${post.category}"\nauthor: "${post.author}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
             const targetPath = `src/content/blog/${post.slug}.md`;
             const res = await githubApi('write', targetPath, { content: markdown, sha: fileSha || undefined, message: `CMS: ${isEditing ? 'Edição' : 'Criação'} do artigo ${post.slug}` });
             if (res.sha) setFileSha(res.sha);
+            setPendingUploads({});
             triggerToast('Artigo salvo com sucesso!', 'success', 100);
             if (!isEditing) setTimeout(() => { window.location.href = '/admin/posts'; }, 1500);
         } catch (err: any) {
@@ -236,11 +261,25 @@ export default function PostEditor({ filePath }: PostEditorProps) {
 
                     {/* Hero Image */}
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                        <ImageUpload
-                            label="Imagem de Capa"
-                            value={post.heroImage}
-                            onChange={(url) => setPost(p => ({ ...p, heroImage: url }))}
-                        />
+                        <h3 className="font-bold text-slate-700 text-sm border-b border-slate-100 pb-3 mb-4">Imagem de Capa</h3>
+                        <label className="group relative border-2 border-dashed border-slate-200 hover:border-violet-400 bg-slate-50 hover:bg-violet-50 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all text-center overflow-hidden" style={{ minHeight: '120px' }}>
+                            <input type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(e, 'heroImage')} />
+                            {post.heroImage ? (
+                                <>
+                                    <img src={post.heroImage} alt="Capa" className="absolute inset-0 w-full h-full object-cover group-hover:opacity-60 transition-opacity" />
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/20">
+                                        <ImageIcon className="w-8 h-8 text-slate-800" />
+                                        <span className="text-xs font-bold text-slate-900 mt-1">Trocar imagem</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="py-6 flex flex-col items-center text-slate-400 group-hover:text-violet-500 transition-colors">
+                                    <ImageIcon className="w-8 h-8 mb-2" />
+                                    <span className="text-xs font-bold">Enviar imagem de capa</span>
+                                </div>
+                            )}
+                        </label>
+                        {pendingUploads['heroImage'] && <span className="text-[10px] text-amber-600 font-bold block mt-2">Upload pendente — será enviado ao salvar</span>}
                     </div>
 
                     {/* SEO Score Widget */}
