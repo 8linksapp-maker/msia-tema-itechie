@@ -4,6 +4,7 @@ import Breadcrumb from '../../components/itechie/Breadcrumb.astro';
 import BlogSidebar from '../../components/itechie/BlogSidebar.astro';
 import { getCollection } from 'astro:content';
 import { getAuthor } from '../../lib/blogUtils';
+import PostAfterPlugins from '../../plugins/_slots/PostAfterPlugins.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -46,6 +47,7 @@ function formatDate(date: Date) {
                 <div class="post-content">
                   <Content />
                 </div>
+                <PostAfterPlugins currentSlug={post.slug} category={post.data.category || ''} />
               </div>
             </div>
           </div>
