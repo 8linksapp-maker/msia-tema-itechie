@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import { readData } from '../../../lib/readData';
 const homeData = readData('home.json');
 const testimonialArea = homeData?.testimonial || { title: "O que dizem nossos clientes", subtitle: "Depoimentos", items: [] };
@@ -21,13 +20,20 @@ const testimonials = testimonialArea.items;
         <div class="col-lg-4 col-md-6 flex-shrink-0">
           <div class="single-testimonial-inner h-100">
             <div class="thumb">
-              <Image 
-                src={item.image || item.img} 
-                alt={item.name} 
-                width={80} 
-                height={80} 
-                style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" 
-              />
+              {(item.image || item.img) ? (
+                <img
+                  src={item.image || item.img}
+                  alt={item.name}
+                  width={80}
+                  height={80}
+                  style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;"
+                  loading="lazy"
+                />
+              ) : (
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--main-color, #2196F3), #64B5F6); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                  {item.name?.charAt(0) || '?'}
+                </div>
+              )}
             </div>
             <div class="details">
               <p>{item.quote || item.text}</p>
