@@ -221,6 +221,16 @@ export default function ConfigEditor() {
                 </div>
             </div>
 
+            {/* Rodapé */}
+            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Rodapé (Footer)</h3>
+                <div className="space-y-4">
+                    <div><label className={labelClass}>Descrição do Footer</label><textarea rows={3} placeholder="Texto que aparece no rodapé do site" value={config?.footer?.description || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
+                    <div><label className={labelClass}>Texto de Copyright</label><input type="text" placeholder="Nome da empresa ou site" value={config?.footer?.copyright || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, copyright: e.target.value } })} className={inputClass} /></div>
+                    <div><label className={labelClass}>Imagem de Fundo do Footer</label><input type="text" placeholder="/itechie-assets/img/bg/footer-bg.png" value={config?.footer?.backgroundImage || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, backgroundImage: e.target.value } })} className={inputClass} /></div>
+                </div>
+            </div>
+
             {/* SEO Global */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">SEO Global</h3>
