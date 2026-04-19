@@ -18,22 +18,24 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
 
         setUploading(true);
         try {
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const base64 = (reader.result as string).split(',')[1];
-                const fileName = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase()}`;
-                const path = `public/itechie-assets/img/uploads/${fileName}`;
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve((reader.result as string).split(',')[1]);
+                reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+                reader.readAsDataURL(file);
+            });
 
-                await githubApi('write', path, {
-                    content: base64,
-                    isBase64: true,
-                    message: `Upload image ${fileName} via CMS`
-                });
+            const fileName = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase()}`;
+            const path = `public/itechie-assets/img/uploads/${fileName}`;
 
-                onChange(`/itechie-assets/img/uploads/${fileName}`);
-                triggerToast('Upload concluído!', 'success');
-            };
-            reader.readAsDataURL(file);
+            await githubApi('write', path, {
+                content: base64,
+                isBase64: true,
+                message: `Upload image ${fileName} via CMS`
+            });
+
+            onChange(`/itechie-assets/img/uploads/${fileName}`);
+            triggerToast('Upload concluído!', 'success');
         } catch (err: any) {
             triggerToast('Erro no upload: ' + err.message, 'error');
         } finally {
