@@ -212,6 +212,23 @@ export default function ConfigEditor() {
                 </div>
             </div>
 
+            {/* Prefixo da URL dos Posts */}
+            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Prefixo da URL dos Posts</h3>
+                <div className="flex gap-2">
+                    {[
+                        { value: 'blog', label: '/blog/titulo-do-post', desc: 'Padrao' },
+                        { value: '', label: '/titulo-do-post', desc: 'URL limpa (sem /blog)' },
+                    ].map(opt => (
+                        <label key={opt.value} className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all text-center ${(config?.postUrlPrefix ?? 'blog') === opt.value ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                            <input type="radio" name="postUrlPrefix" value={opt.value} checked={(config?.postUrlPrefix ?? 'blog') === opt.value} onChange={e => setConfig({ ...config, postUrlPrefix: e.target.value })} className="hidden" />
+                            <p className="text-sm font-bold text-slate-800">{opt.label}</p>
+                            <p className="text-xs text-slate-500">{opt.desc}</p>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
             {/* Informações de Contato */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Informações de Contato</h3>

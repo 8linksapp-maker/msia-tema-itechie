@@ -38,7 +38,7 @@ const DEFAULT: HomeConfig = {
     latestPosts: { limit: 3, btnText: "", btnLink: "", subtitle: "", description: "" }
 };
 
-type Tab = 'hero' | 'intro' | 'about' | 'skills' | 'services' | 'testimonials' | 'blog';
+type Tab = 'hero' | 'intro' | 'about' | 'skills' | 'services' | 'testimonials' | 'blog' | 'sections';
 
 export default function HomeEditor() {
     const [config, setConfig] = useState<HomeConfig>(DEFAULT);
@@ -122,7 +122,7 @@ export default function HomeEditor() {
 
             {/* Tabs */}
             <div className="flex flex-wrap gap-2 bg-white border border-slate-200 p-2 rounded-xl shadow-sm">
-                {(['hero', 'intro', 'about', 'skills', 'services', 'testimonials', 'blog'] as Tab[]).map(t => (
+                {(['hero', 'intro', 'about', 'skills', 'services', 'testimonials', 'blog', 'sections'] as Tab[]).map(t => (
                     <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${tab === t ? 'bg-violet-100 text-violet-700' : 'text-slate-600 hover:bg-slate-50'}`}>
                         {t}
                     </button>
@@ -295,6 +295,33 @@ export default function HomeEditor() {
                             {renderField('Limite de Posts', config.latestPosts.limit, (val) => updateNested('latestPosts', 'limit', val))}
                             {renderField('Texto Botão', config.latestPosts.btnText, (val) => updateNested('latestPosts', 'btnText', val))}
                             {renderField('Link Botão', config.latestPosts.btnLink, (val) => updateNested('latestPosts', 'btnLink', val))}
+                        </div>
+                    </div>
+                )}
+
+                {tab === 'sections' && (
+                    <div className="space-y-4">
+                        <h3 className="font-bold text-lg mb-4">Secoes da Home</h3>
+                        <p className="text-sm text-slate-500 mb-4">Escolha quais secoes ficam visiveis na homepage.</p>
+                        <div className="space-y-3">
+                            {[
+                                { key: 'showIntro', label: 'Destaques Rapidos (Intro)' },
+                                { key: 'showAbout', label: 'Secao Sobre' },
+                                { key: 'showSkills', label: 'Habilidades' },
+                                { key: 'showServices', label: 'Servicos' },
+                                { key: 'showTestimonials', label: 'Depoimentos' },
+                                { key: 'showBlog', label: 'Posts do Blog' },
+                            ].map(s => (
+                                <label key={s.key} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={(config as any).sections?.[s.key] !== false}
+                                        onChange={e => setConfig(c => ({ ...c, sections: { ...(c as any).sections, [s.key]: e.target.checked } }))}
+                                        className="w-4 h-4 rounded text-violet-600 focus:ring-violet-500"
+                                    />
+                                    <span className="text-sm font-medium text-slate-700">{s.label}</span>
+                                </label>
+                            ))}
                         </div>
                     </div>
                 )}
