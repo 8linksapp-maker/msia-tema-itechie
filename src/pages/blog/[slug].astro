@@ -4,9 +4,12 @@ import Breadcrumb from '../../components/itechie/Breadcrumb.astro';
 import BlogSidebar from '../../components/itechie/BlogSidebar.astro';
 import { getCollection } from 'astro:content';
 import { getAuthor } from '../../lib/blogUtils';
+import { readData } from '../../lib/readData';
 import PostAfterPlugins from '../../plugins/_slots/PostAfterPlugins.astro';
 
 export async function getStaticPaths() {
+  const siteConfig = readData('siteConfig.json', {}) as any;
+  if (siteConfig.postUrlPrefix !== 'blog') return [];
   const posts = await getCollection('blog');
   return posts.map((post) => ({
     params: { slug: post.slug },
@@ -38,7 +41,7 @@ function formatDate(date: Date) {
               <div class="details">
                 <ul class="blog-meta">
                   <li><i class="far fa-user"></i> Por {authorData.name}</li>
-                  <li><i class="far fa-calendar-alt"></i> {formatDate(post.data.pubDate)}</li>
+                  <li class="post-date"><i class="far fa-calendar-alt"></i> {formatDate(post.data.pubDate)}</li>
                   <li><i class="far fa-folder-open"></i> {post.data.category || 'Tecnologia'}</li>
                 </ul>
                 

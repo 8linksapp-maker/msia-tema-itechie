@@ -1,61 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, LayoutTemplate } from 'lucide-react';
+import { Save, Loader2, LayoutTemplate, Plus, X } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+
+const FILE_PATH = 'src/data/contato.json';
+
+const DEFAULT: any = {
+    breadcrumb: { title: 'Contato', subtitle: 'Contato' },
+    intro: { title: '', subtitle: '', description: '' },
+    contactBlocks: { items: [] },
+    seo: { title: '', description: '' },
+};
 
 export default function ContatoEditor() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
-    const [contato, setContato] = useState<any>(null);
+    const [data, setData] = useState<any>(null);
     const [fileSha, setFileSha] = useState('');
-    const [pendingUploads, setPendingUploads] = useState<Record<string, File>>({});
 
     useEffect(() => {
-        githubApi('read', 'src/data/contato.json')
-            .then(data => { setContato(JSON.parse(data?.content || "{}")); setFileSha(data.sha); })
-            .catch(err => setError(err.message))
+        githubApi('read', FILE_PATH)
+            .then((d: any) => {
+                const parsed = JSON.parse(d?.content || '{}');
+                const merged: any = {};
+                Object.keys(DEFAULT).forEach(k => { merged[k] = { ...DEFAULT[k], ...(parsed[k] || {}) }; });
+                setData(merged);
+                setFileSha(d.sha);
+            })
+            .catch(err => { setError(err.message); setData(DEFAULT); })
             .finally(() => setLoading(false));
     }, []);
-
-    const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
 
     const handleSave = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         setSaving(true); setError('');
-        triggerToast('Sincronizando Página de Contato...', 'progress', 20);
+        triggerToast('Salvando Contato...', 'progress', 20);
         try {
-            let finalJson = { ...contato };
-            for (const [keyPath, fileObj] of Object.entries(pendingUploads)) {
-                const base64Content = await fileToBase64(fileObj);
-                const fileExt = fileObj.name.split('.').pop() || 'jpg';
-                const ghPath = `public/uploads/${Date.now()}-${keyPath}.${fileExt}`;
-                await githubApi('write', ghPath, { content: base64Content, isBase64: true, message: `Upload imagem ${ghPath}` });
-                if (keyPath === 'seoImg') { if (!finalJson.seo) finalJson.seo = {}; finalJson.seo.image = ghPath.replace('public', ''); }
-            }
-            const res = await githubApi('write', 'src/data/contato.json', { content: JSON.stringify(finalJson, null, 2), sha: fileSha, message: 'CMS: Customização da Página Contato' });
-            setFileSha(res.sha); setContato(finalJson); setPendingUploads({});
-            triggerToast('Página de Contato atualizada!', 'success', 100);
-        } catch (err: any) {
-            setError(err.message); triggerToast(`Erro: ${err.message}`, 'error');
-        } finally { setSaving(false); }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, uiKey: string) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setPendingUploads(prev => ({ ...prev, [uiKey]: file }));
-        if (uiKey === 'seoImg') setContato({ ...contato, seo: { ...contato?.seo, image: URL.createObjectURL(file) } });
-        e.target.value = '';
-    };
-
-    const updateField = (section: string, key: string, value: string) => {
-        setContato({ ...contato, [section]: { ...(contato[section] || {}), [key]: value } });
+            const res = await githubApi('write', FILE_PATH, { content: JSON.stringify(data, null, 2), sha: fileSha, message: 'CMS: Pagina Contato atualizada' });
+            setFileSha(res.sha);
+            triggerToast('Pagina Contato atualizada!', 'success', 100);
+        } catch (err: any) { setError(err.message); triggerToast(`Erro: ${err.message}`, 'error'); }
+        finally { setSaving(false); }
     };
 
     if (loading) return (
@@ -68,16 +54,26 @@ export default function ContatoEditor() {
     const cardClass = "p-8 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm";
     const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
     const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const subInputClass = "w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500";
+
+    const setF = (sec: string, key: string, value: any) => setData((d: any) => ({ ...d, [sec]: { ...d[sec], [key]: value } }));
+    const setItem = (idx: number, field: string, value: any) => setData((d: any) => {
+        const arr = [...(d.contactBlocks.items || [])];
+        arr[idx] = { ...(arr[idx] || {}), [field]: value };
+        return { ...d, contactBlocks: { items: arr } };
+    });
+    const addItem = () => setData((d: any) => ({ ...d, contactBlocks: { items: [...(d.contactBlocks?.items || []), { icon: 'icomoon-chat', title: '', text: '' }] } }));
+    const rmItem = (idx: number) => setData((d: any) => ({ ...d, contactBlocks: { items: d.contactBlocks.items.filter((_: any, i: number) => i !== idx) } }));
 
     return (
-        <div className="max-w-4xl pb-32">
-            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+        <div className="max-w-4xl space-y-0 pb-32">
+            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm mb-6 sticky top-4 z-10">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-800">Editar Página: Contato</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">src/data/contato.json</code></p>
+                    <h2 className="text-lg font-bold text-slate-800">Editar Pagina: Contato</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">{FILE_PATH}</code></p>
                 </div>
                 <button onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
-                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {saving ? 'Salvando...' : 'Salvar'}
                 </button>
             </div>
@@ -86,52 +82,47 @@ export default function ContatoEditor() {
 
             <form onSubmit={handleSave} className="space-y-6">
                 <div className={cardClass}>
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">1. Chamada de Topo (Hero)</h3>
-                    <div className="space-y-4">
-                        <div><label className={labelClass}>Título Principal (H1)</label><input type="text" value={contato?.hero?.title || ''} onChange={e => updateField('hero', 'title', e.target.value)} className={inputClass} /></div>
-                        <div><label className={labelClass}>Subtítulo</label><textarea rows={3} value={contato?.hero?.subtitle || ''} onChange={e => updateField('hero', 'subtitle', e.target.value)} className={`${inputClass} resize-y`} /></div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">1. Banner (Breadcrumb)</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label className={labelClass}>Titulo</label><input type="text" value={data?.breadcrumb?.title || ''} onChange={e => setF('breadcrumb', 'title', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Subtitulo</label><input type="text" value={data?.breadcrumb?.subtitle || ''} onChange={e => setF('breadcrumb', 'subtitle', e.target.value)} className={inputClass} /></div>
                     </div>
                 </div>
 
                 <div className={cardClass}>
-                    <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
-                        <h3 className="text-lg font-bold text-slate-900">2. Textos do Bloco de Informações</h3>
-                        <span className="text-[10px] bg-slate-100 text-slate-800 font-bold px-2 py-1 rounded">Contatos reais editados em Configurações</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2"><label className={labelClass}>Título do Box de Informações</label><input type="text" value={contato?.cards?.napTitle || ''} onChange={e => updateField('cards', 'napTitle', e.target.value)} className={inputClass} /></div>
-                        {[
-                            { key: 'addressLabel', label: 'Aviso de Endereço' },
-                            { key: 'phoneLabel', label: 'Aviso de Telefone' },
-                            { key: 'emailLabel', label: 'Aviso de E-mail' },
-                            { key: 'formSubmitText', label: 'Texto do Botão de Envio' },
-                        ].map(f => (
-                            <div key={f.key}><label className={labelClass}>{f.label}</label><input type="text" value={contato?.cards?.[f.key] || ''} onChange={e => updateField('cards', f.key, e.target.value)} className={inputClass} /></div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">3. Google Maps</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">2. Introducao</h3>
                     <div className="space-y-4">
-                        <div>
-                            <label className={labelClass}>URL do Google Maps (Embed)</label>
-                            <input type="text" value={contato?.googleMapsUrl || ''} onChange={e => setContato({ ...contato, googleMapsUrl: e.target.value })} placeholder="https://www.google.com/maps/embed?pb=..." className={inputClass} />
-                            <p className="text-xs text-slate-400 mt-1">Google Maps &rarr; Compartilhar &rarr; Incorporar &rarr; copie a URL do src=""</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div><label className={labelClass}>Subtitulo</label><input type="text" value={data?.intro?.subtitle || ''} onChange={e => setF('intro', 'subtitle', e.target.value)} className={inputClass} /></div>
+                            <div><label className={labelClass}>Titulo</label><input type="text" value={data?.intro?.title || ''} onChange={e => setF('intro', 'title', e.target.value)} className={inputClass} /></div>
                         </div>
+                        <div><label className={labelClass}>Descricao</label><textarea rows={3} value={data?.intro?.description || ''} onChange={e => setF('intro', 'description', e.target.value)} className={`${inputClass} resize-y`} /></div>
+                    </div>
+                </div>
+
+                <div className={cardClass}>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">3. Cards de Contato</h3>
+                    <p className="text-xs text-slate-500 mb-4">Adicione cards com formas de contato (telefone, email, endereco, WhatsApp). Use HTML <code>&lt;br/&gt;</code> no texto para quebrar linhas.</p>
+                    <div className="space-y-3">
+                        {(data?.contactBlocks?.items || []).map((it: any, i: number) => (
+                            <div key={i} className="border border-slate-200 rounded-lg p-3 space-y-2">
+                                <div className="flex justify-between items-center"><strong className="text-xs text-slate-500">Card {i + 1}</strong><button type="button" onClick={() => rmItem(i)} className="text-red-500"><X className="w-4 h-4" /></button></div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <input type="text" placeholder="Titulo (ex: Telefone)" value={it.title || ''} onChange={e => setItem(i, 'title', e.target.value)} className={subInputClass} />
+                                    <input type="text" placeholder="Icone (ex: icomoon-chat, fab fa-whatsapp)" value={it.icon || ''} onChange={e => setItem(i, 'icon', e.target.value)} className={`${subInputClass} font-mono`} />
+                                </div>
+                                <textarea rows={2} placeholder="Texto (HTML permitido)" value={it.text || ''} onChange={e => setItem(i, 'text', e.target.value)} className={`${subInputClass} resize-y`} />
+                            </div>
+                        ))}
+                        <button type="button" onClick={addItem} className="text-sm font-bold text-violet-600 flex items-center gap-1"><Plus className="w-4 h-4" /> Adicionar card</button>
                     </div>
                 </div>
 
                 <div className={cardClass}>
                     <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">SEO</h3>
                     <div className="space-y-4">
-                        <div><label className={labelClass}>Título SEO</label><input type="text" value={contato?.seo?.title || ''} onChange={e => updateField('seo', 'title', e.target.value)} className={inputClass} placeholder="Contato | Nome do Site" /></div>
-                        <div><label className={labelClass}>Meta Descrição</label><textarea rows={3} value={contato?.seo?.description || ''} onChange={e => updateField('seo', 'description', e.target.value)} className={`${inputClass} resize-y text-xs`} /></div>
-                        <div>
-                            <label className={labelClass}>Imagem Social (Open Graph)</label>
-                            <input type="file" accept="image/*" onChange={e => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-violet-50 file:text-violet-700" />
-                            {contato?.seo?.image && <img src={contato?.seo?.image} className="w-full aspect-video object-cover mt-3 rounded" />}
-                        </div>
+                        <div><label className={labelClass}>Titulo SEO</label><input type="text" value={data?.seo?.title || ''} onChange={e => setF('seo', 'title', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Meta descricao</label><textarea rows={3} value={data?.seo?.description || ''} onChange={e => setF('seo', 'description', e.target.value)} className={`${inputClass} resize-y`} /></div>
                     </div>
                 </div>
             </form>

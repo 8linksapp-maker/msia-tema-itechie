@@ -1,4 +1,5 @@
 ---
+import { BLOG_BASE } from '../../../lib/postUrl';
 import { getCollection } from 'astro:content';
 import { readData } from '../../../lib/readData';
 import { getAuthor } from '../../../lib/blogUtils';
@@ -37,9 +38,9 @@ function formatDate(date: Date) {
                      </ul>
                   </div>
                   <div class="details">
-                     <h4><a href={`/blog/${post.slug}`}>{post.data.title}</a></h4>
+                     <h4><a href={`${BLOG_BASE}/${post.slug}`}>{post.data.title}</a></h4>
                      <p>{post.data.description}</p>
-                     <a class="read-more-btn" href={`/blog/${post.slug}`}><i class="fa fa-arrow-right"></i></a>
+                     <a class="read-more-btn" href={`${BLOG_BASE}/${post.slug}`}><i class="fa fa-arrow-right"></i></a>
                   </div>
                </div>
             </div>

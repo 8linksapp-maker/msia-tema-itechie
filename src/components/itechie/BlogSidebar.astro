@@ -1,4 +1,5 @@
 ---
+import { BLOG_BASE } from '../../lib/postUrl';
 import { getCollection } from 'astro:content';
 import { readData } from '../../lib/readData';
 import { slugify } from '../../lib/slugify';
@@ -37,7 +38,7 @@ function formatDate(date: Date) {
               <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt="blog" style="width: 80px; height: 80px; object-fit: cover;" />
             </div>
             <div class="media-body align-self-center">
-              <h5 class="title"><a href={`/blog/${post.slug}`}>{post.data.title}</a></h5>
+              <h5 class="title"><a href={`${BLOG_BASE}/${post.slug}`}>{post.data.title}</a></h5>
               <div class="post-info"><i class="far fa-calendar-alt"></i> <span>{formatDate(post.data.pubDate)}</span></div>
             </div>
           </div>

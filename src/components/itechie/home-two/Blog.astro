@@ -1,4 +1,5 @@
 ---
+import { BLOG_BASE } from '../../../lib/postUrl';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { readData } from '../../../lib/readData';
@@ -44,13 +45,13 @@ function formatDate(date: Date) {
               />
             </div>
             <div class="details">
-              <h4><a href={`/blog/${post.slug}`}>{post.data.title}</a></h4>
+              <h4><a href={`${BLOG_BASE}/${post.slug}`}>{post.data.title}</a></h4>
               <ul class="blog-meta">
                 <li><i class="far fa-user"></i> Por {post.data.author || 'Admin'}</li>
                 <li><i class="far fa-calendar-alt me-2"></i>{formatDate(post.data.pubDate)}</li>
               </ul>
               <p>{post.data.description}</p>
-              <a class="read-more-text" href={`/blog/${post.slug}`}>
+              <a class="read-more-text" href={`${BLOG_BASE}/${post.slug}`}>
                 Ler Mais <i class="fa fa-caret-right"></i>
               </a>
             </div>

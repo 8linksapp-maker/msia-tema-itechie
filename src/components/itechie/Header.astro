@@ -22,7 +22,7 @@ const allServices = servicosData?.serviceArea?.items || [];
           <div class="logo">
             <a href="/">
               {siteConfig.logo ? (
-                <img src={siteConfig.logo} alt={siteConfig.name} />
+                <img src={siteConfig.logo} alt={siteConfig.name} style={`max-height: ${siteConfig.logoHeight || 50}px; height: auto; width: auto;`} />
               ) : (
                 <span class="text-logo">{siteConfig.name}</span>
               )}
@@ -75,7 +75,7 @@ const allServices = servicosData?.serviceArea?.items || [];
       <div class="logo text-center flex-grow-1 d-lg-none">
         <a href="/">
           {siteConfig.logo ? (
-            <img src={siteConfig.logo} alt={siteConfig.name} style="max-height: 40px;" />
+            <img src={siteConfig.logo} alt={siteConfig.name} style={`max-height: ${siteConfig.logoHeight || 40}px;`} />
           ) : (
             <span class="text-logo" style="font-size: 20px;">{siteConfig.name}</span>
           )}

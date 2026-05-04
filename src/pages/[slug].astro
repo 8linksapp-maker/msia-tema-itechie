@@ -1,0 +1,78 @@
+---
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import BlogSidebar from '../components/itechie/BlogSidebar.astro';
+import { getCollection } from 'astro:content';
+import { getAuthor } from '../lib/blogUtils';
+import { readData } from '../lib/readData';
+import PostAfterPlugins from '../plugins/_slots/PostAfterPlugins.astro';
+
+export async function getStaticPaths() {
+  const RESERVED = new Set(['blog', 'sobre', 'contato', 'categoria', 'admin', 'login', 'registrar', 'politica-privacidade', 'termos', 'configuracoes']);
+  const siteConfig = readData('siteConfig.json', {}) as any;
+  if (siteConfig.postUrlPrefix === 'blog') return [];
+  const posts = await getCollection('blog');
+  return posts
+    .filter(p => !p.data.draft && !RESERVED.has(p.slug))
+    .map(post => ({ params: { slug: post.slug }, props: post }));
+}
+
+const post = Astro.props;
+const { Content } = await post.render();
+const authorData = getAuthor(post.data.author);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+---
+
+<ItechieLayout title={post.data.title}>
+  <Breadcrumb title="Detalhes do Blog" subTitle="Blog Details" />
+
+  <div class="blog-area pd-top-120 pd-bottom-120">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="blog-details-page-content">
+            <div class="single-blog-inner">
+              <div class="thumb">
+                <img src={post.data.heroImage || '/itechie-assets/img/blog/1.webp'} alt={post.data.title} style="width: 100%; height: 450px; object-fit: cover;" />
+              </div>
+              <div class="details">
+                <ul class="blog-meta">
+                  <li><i class="far fa-user"></i> Por {authorData.name}</li>
+                  <li class="post-date"><i class="far fa-calendar-alt"></i> {formatDate(post.data.pubDate)}</li>
+                  <li><i class="far fa-folder-open"></i> {post.data.category || 'Tecnologia'}</li>
+                </ul>
+
+                <h2 class="title">{post.data.title}</h2>
+
+                <div class="post-content">
+                  <Content />
+                </div>
+                <PostAfterPlugins currentSlug={post.slug} category={post.data.category || ''} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-12">
+          <BlogSidebar />
+        </div>
+      </div>
+    </div>
+  </div>
+</ItechieLayout>
+
+<style>
+  .single-blog-inner .details { padding-top: 40px; }
+  .blog-meta { padding: 0; margin: 0 0 20px 0; list-style: none; display: flex; gap: 20px; font-size: 14px; color: #666; }
+  .blog-meta li i { color: var(--main-color); margin-right: 5px; }
+  .single-blog-inner .title { font-size: 36px; font-weight: 700; margin-bottom: 30px; font-family: 'Rajdhani', sans-serif; }
+  .post-content { line-height: 1.8; color: #444; overflow-wrap: break-word; word-break: break-word; }
+  .post-content :global(img) { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
+  .post-content :global(pre) { max-width: 100%; overflow-x: auto; }
+  .post-content :global(p) { margin-bottom: 25px; }
+  .post-content :global(blockquote) { background: #f4f4ff; padding: 30px; border-left: 5px solid var(--main-color); font-style: italic; margin: 30px 0; position: relative; z-index: 1; }
+  .post-content :global(blockquote i) { position: absolute; right: 30px; top: 30px; font-size: 50px; color: rgba(var(--main-color-rgb), 0.1); z-index: -1; }
+</style>

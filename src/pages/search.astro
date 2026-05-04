@@ -1,0 +1,74 @@
+---
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+import { BLOG_BASE } from '../lib/postUrl';
+
+const posts = (await getCollection('blog'))
+    .filter(p => !p.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const items = posts.map(p => ({
+    slug: p.slug,
+    title: p.data.title,
+    description: p.data.description || '',
+    heroImage: p.data.heroImage || '',
+    category: p.data.category || '',
+}));
+---
+
+<ItechieLayout title="Buscar">
+    <Breadcrumb title="Buscar" subTitle="Resultados" />
+
+    <div class="blog-area pd-top-120 pd-bottom-120">
+        <div class="container">
+            <form id="search-form" class="d-flex mb-4" style="gap:0.5rem;">
+                <input id="q-input" type="search" name="q" class="form-control" placeholder="Digite sua busca..." />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+            <p id="result-info" class="text-muted small"></p>
+            <div id="search-results" class="row"></div>
+            <div id="empty-state" style="display:none; padding:2rem; text-align:center; background:#f8f9fa; border-radius:0.5rem;">
+                <p>Nenhum artigo encontrado.</p>
+            </div>
+        </div>
+    </div>
+
+    <script id="search-data" type="application/json" set:html={JSON.stringify(items)} />
+    <script type="module" define:vars={{ blogBase: BLOG_BASE }}>
+        const items = JSON.parse(document.getElementById('search-data').textContent || '[]');
+        const $r = document.getElementById('search-results');
+        const $e = document.getElementById('empty-state');
+        const $i = document.getElementById('result-info');
+        const $q = document.getElementById('q-input');
+        const $f = document.getElementById('search-form');
+        const esc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        function search(q) {
+            const nq = norm(q.trim());
+            if (!nq) return [];
+            return items.filter(i => norm(i.title).includes(nq) || norm(i.description).includes(nq) || norm(i.category).includes(nq));
+        }
+        function render(filtered, q) {
+            if (!q.trim()) { $i.textContent = 'Digite um termo para buscar.'; $r.innerHTML = ''; $e.style.display = 'none'; return; }
+            $i.textContent = `${filtered.length} resultado${filtered.length === 1 ? '' : 's'} para "${q}"`;
+            if (!filtered.length) { $r.innerHTML = ''; $e.style.display = 'block'; return; }
+            $e.style.display = 'none';
+            $r.innerHTML = filtered.map(p => `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div style="background:#fff; border-radius:0.5rem; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.05);">
+                        ${p.heroImage ? `<a href="${blogBase}/${p.slug}"><img src="${esc(p.heroImage)}" alt="${esc(p.title)}" loading="lazy" style="width:100%; aspect-ratio:16/9; object-fit:cover; display:block;"/></a>` : ''}
+                        <div style="padding:1rem;">
+                            <h5 style="margin:0 0 0.5rem;"><a href="${blogBase}/${p.slug}" style="color:inherit; text-decoration:none;">${esc(p.title)}</a></h5>
+                            <p style="margin:0; font-size:0.875rem; color:#666;">${esc(p.description)}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        const params = new URLSearchParams(location.search);
+        const q0 = params.get('q') || '';
+        $q.value = q0; render(search(q0), q0);
+        $f.addEventListener('submit', e => { e.preventDefault(); const q = $q.value; const url = new URL(location.href); url.searchParams.set('q', q); history.replaceState(null, '', url); render(search(q), q); });
+    </script>
+</ItechieLayout>
