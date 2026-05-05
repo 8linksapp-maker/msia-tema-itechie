@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 import { getAuthor } from '../../lib/blogUtils';
 import { readData } from '../../lib/readData';
 import PostAfterPlugins from '../../plugins/_slots/PostAfterPlugins.astro';
+import AffiliateProducts from '../../plugins/affiliates/AffiliateProducts.astro';
 
 export async function getStaticPaths() {
   const siteConfig = readData('siteConfig.json', {}) as any;
@@ -50,6 +51,7 @@ function formatDate(date: Date) {
                 <div class="post-content">
                   <Content />
                 </div>
+                <AffiliateProducts />
                 <PostAfterPlugins currentSlug={post.slug} category={post.data.category || ''} />
               </div>
             </div>
