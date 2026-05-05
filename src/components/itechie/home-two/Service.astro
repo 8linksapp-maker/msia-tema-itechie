@@ -1,8 +1,13 @@
 ---
 import { readData } from '../../../lib/readData';
+import { resolveServiceLink } from '../../../lib/resolveServiceLink';
+
 const homeData = readData('home.json');
 const serviceArea = homeData?.serviceArea || { title: "Oferecemos serviços de classe mundial", subtitle: "Nossos Serviços", items: [] };
 const serviceData = serviceArea.items;
+
+const servicosData = readData('servicos.json', { serviceArea: { items: [] } });
+const validSlugs = new Set<string>((servicosData?.serviceArea?.items || []).map((s: any) => s.slug).filter(Boolean));
 ---
 
 <div class="service-area pd-top-115 pd-bottom-90" style="background-image: url('/itechie-assets/img/bg/6.webp'); background-size: cover;">
@@ -36,7 +41,7 @@ const serviceData = serviceArea.items;
               <div class="details-hover">
                 <h3>{item.title}</h3>
                 <p>{item.desc}</p>
-                <a class="it-btn btn-base btn-small" href={item.link || `/servico/${item.slug}`}>Ver Detalhes</a>
+                <a class="it-btn btn-base btn-small" href={resolveServiceLink(item, validSlugs)}>Ver Detalhes</a>
               </div>
             </div>
           </div>
