@@ -8,13 +8,16 @@ const menuItems = readData('menu.json', { items: [] }).items || [];
 
 const categoriesData = readData('categories.json', []);
 const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
-const allCategories = finalCategoriesData; 
+const allCategories = finalCategoriesData;
 
 const servicosData = readData('servicos.json', { serviceArea: { items: [] } });
 const allServices = servicosData?.serviceArea?.items || [];
+
+// menuHoverEnabled controla se o submenu abre passando o mouse (true) ou só ao clicar (false)
+const menuHoverEnabled = siteConfig?.menuHoverEnabled !== false;
 ---
 
-<header>
+<header data-menu-hover={menuHoverEnabled ? 'on' : 'off'}>
   <div class="navbar-top style-2">
     <div class="container">
       <div class="row align-items-center">
@@ -180,6 +183,23 @@ const allServices = servicosData?.serviceArea?.items || [];
       toggle.classList.toggle('active');
     });
   });
+
+  // Desktop dropdown — click toggle (acessibilidade + modo click-only)
+  document.querySelectorAll('.menu-item-has-children > a').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      const li = trigger.closest('.menu-item-has-children');
+      if (!li) return;
+      e.preventDefault();
+      const wasOpen = li.classList.contains('is-open');
+      document.querySelectorAll('.menu-item-has-children.is-open').forEach(d => d.classList.remove('is-open'));
+      if (!wasOpen) li.classList.add('is-open');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-item-has-children')) {
+      document.querySelectorAll('.menu-item-has-children.is-open').forEach(d => d.classList.remove('is-open'));
+    }
+  });
 </script>
 
 <style>
@@ -306,6 +326,21 @@ const allServices = servicosData?.serviceArea?.items || [];
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+  }
+  /* Modo click-only: neutraliza hover, abre só via .is-open */
+  header[data-menu-hover="off"] .navbar-nav li:hover .sub-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+  }
+  /* Estado aberto via click sempre visível (em qualquer modo) */
+  .navbar-nav li.menu-item-has-children.is-open > .sub-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+  .navbar-nav li.menu-item-has-children.is-open > a:after {
+    transform: rotate(180deg);
   }
   .sub-menu li {
     height: auto !important;
