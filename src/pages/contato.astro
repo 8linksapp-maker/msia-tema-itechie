@@ -7,6 +7,39 @@ import { readData } from '../lib/readData';
 const contatoData = readData('contato.json');
 const intro = contatoData?.intro || { title: "", subtitle: "", description: "" };
 const contactBlocks = contatoData?.contactBlocks || { items: [] };
+
+// Auto-detecta tipo do bloco de contato baseado em title/icon e gera href clicável
+// (mailto:, tel:, https://wa.me/, https://maps.google.com/?q=...).
+// Aluno também pode passar item.href manualmente pra sobrescrever.
+function buildContactHref(item: any): string | null {
+    if (item.href) return item.href;
+    const text = (item.text || '').toString().trim();
+    if (!text) return null;
+    const blob = `${item.title || ''} ${item.icon || ''}`.toLowerCase();
+    const isEmail = /e-?mail|envelope|@/.test(blob) || /^[\w.+-]+@[\w-]+\.\w+/.test(text);
+    const isWhatsapp = /whats|whatsapp/.test(blob);
+    const isPhone = /tel|fone|phone/.test(blob);
+    const isAddress = /endere|address|local|map/.test(blob);
+
+    if (isEmail) {
+        const m = text.match(/[\w.+-]+@[\w-]+\.\w[\w.-]*/);
+        return m ? `mailto:${m[0]}` : null;
+    }
+    if (isWhatsapp) {
+        const digits = text.replace(/\D/g, '');
+        if (digits.length < 10) return null;
+        const withCountry = digits.startsWith('55') ? digits : `55${digits}`;
+        return `https://wa.me/${withCountry}`;
+    }
+    if (isPhone) {
+        const digits = text.replace(/\D/g, '');
+        return digits.length >= 8 ? `tel:+${digits.startsWith('55') ? digits : '55' + digits}` : null;
+    }
+    if (isAddress) {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(text)}`;
+    }
+    return null;
+}
 ---
 
 <ItechieLayout title={contatoData.breadcrumb?.title || "Contato"}>
@@ -24,8 +57,10 @@ const contactBlocks = contatoData?.contactBlocks || { items: [] };
         </div>
       </div>
       <div class="row flex-nowrap overflow-auto pb-4 contact-scroll" style="margin-right: -15px; margin-left: -15px;">
-         {contactBlocks.items?.map((item: any) => (
-            <div class="col-lg-4 col-md-6 flex-shrink-0" style="min-width: 350px;">
+         {contactBlocks.items?.map((item: any) => {
+            const href = buildContactHref(item);
+            const isExternal = href && /^https?:\/\//.test(href);
+            const cardInner = (
                <div class="single-contact-inner text-center h-100">
                   <div class="icon-box">
                      <i class={item.icon}></i>
@@ -37,8 +72,19 @@ const contactBlocks = contatoData?.contactBlocks || { items: [] };
                      </div>
                   </div>
                </div>
-            </div>
-         ))}
+            );
+            return (
+               <div class="col-lg-4 col-md-6 flex-shrink-0" style="min-width: 350px;">
+                  {href ? (
+                     <a href={href} class="single-contact-link"
+                        target={isExternal ? '_blank' : undefined}
+                        rel={isExternal ? 'noopener noreferrer' : undefined}>
+                        {cardInner}
+                     </a>
+                  ) : cardInner}
+               </div>
+            );
+         })}
       </div>
     </div>
   </div>
@@ -75,5 +121,16 @@ const contactBlocks = contatoData?.contactBlocks || { items: [] };
     font-size: 50px;
     color: var(--main-color);
     margin-bottom: 25px;
+  }
+  /* Quando o card é clicável, herda cor do parent <a> e ganha cursor-pointer */
+  .single-contact-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+  }
+  .single-contact-link:hover {
+    color: inherit;
+    text-decoration: none;
   }
 </style>

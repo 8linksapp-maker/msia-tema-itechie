@@ -184,15 +184,21 @@ const menuHoverEnabled = siteConfig?.menuHoverEnabled !== false;
     });
   });
 
-  // Desktop dropdown — click toggle (acessibilidade + modo click-only)
+  // Desktop dropdown — 2-stage click: 1º click abre submenu, 2º navega.
+  // Antes era preventDefault incondicional, então o link top-level NUNCA navegava
+  // (sintoma reportado: "nao estao clicando, so aparece a categoria").
   document.querySelectorAll('.menu-item-has-children > a').forEach(trigger => {
     trigger.addEventListener('click', (e) => {
       const li = trigger.closest('.menu-item-has-children');
       if (!li) return;
-      e.preventDefault();
-      const wasOpen = li.classList.contains('is-open');
-      document.querySelectorAll('.menu-item-has-children.is-open').forEach(d => d.classList.remove('is-open'));
-      if (!wasOpen) li.classList.add('is-open');
+      const isOpen = li.classList.contains('is-open');
+      if (!isOpen) {
+        // Submenu fechado: abre + previne navegação pra usuário ver as opções.
+        e.preventDefault();
+        document.querySelectorAll('.menu-item-has-children.is-open').forEach(d => d.classList.remove('is-open'));
+        li.classList.add('is-open');
+      }
+      // Submenu já aberto: deixa o link navegar normalmente (default behavior).
     });
   });
   document.addEventListener('click', (e) => {
