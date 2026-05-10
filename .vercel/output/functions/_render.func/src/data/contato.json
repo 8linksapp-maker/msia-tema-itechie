@@ -1,0 +1,30 @@
+{
+  "breadcrumb": {
+    "title": "Vamos Conversar?",
+    "subtitle": "Contato"
+  },
+  "intro": {
+    "title": "Inicie sua Transformação Digital",
+    "subtitle": "Fale Conosco",
+    "description": "Preencha o formulário ou use nossos canais diretos para solicitar um orçamento personalizado para o seu negócio."
+  },
+  "contactBlocks": {
+    "items": [
+      {
+        "icon": "icomoon-calendar-2",
+        "title": "Localização",
+        "text": "Av. Paulista, 1000 - São Paulo, SP <br/> Edifício Digital Work"
+      },
+      {
+        "icon": "icomoon-chat",
+        "title": "E-mail Estratégico",
+        "text": "contato@skydigital.com.br <br/> comercial@skydigital.com.br"
+      },
+      {
+        "icon": "fab fa-whatsapp",
+        "title": "WhatsApp Premium",
+        "text": "+55 (11) 98888-7777"
+      }
+    ]
+  }
+}

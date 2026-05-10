@@ -1,0 +1,26 @@
+---
+export const prerender = false;
+import ItechieLayout from '../layouts/ItechieLayout.astro';
+import Breadcrumb from '../components/itechie/Breadcrumb.astro';
+import ServiceArea from '../components/itechie/service-page/ServiceArea.astro';
+import WorkArea from '../components/itechie/home-one/WorkArea.astro';
+import Testimonial from '../components/itechie/service-page/Testimonial.astro';
+import PricingPlan from '../components/itechie/home-one/PricingPlan.astro';
+import CtaArea from '../components/itechie/common/CtaArea.astro';
+
+import { readData } from '../lib/readData';
+const servicosData = readData('servicos.json');
+---
+
+<ItechieLayout title={servicosData.breadcrumb?.title || "Serviços"}>
+  <Breadcrumb title={servicosData.breadcrumb?.title || "Nossos Serviços"} subTitle={servicosData.breadcrumb?.subtitle || "Serviços"} />
+  
+  <ServiceArea data={servicosData.serviceArea} />
+  
+  <WorkArea data={servicosData.workArea} />
+  
+  <PricingPlan data={servicosData.pricing} />
+  
+  <CtaArea data={servicosData.cta} />
+  
+</ItechieLayout>

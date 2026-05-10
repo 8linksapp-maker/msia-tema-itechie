@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 import { getAuthor } from '../lib/blogUtils';
 import { readData } from '../lib/readData';
 import PostAfterPlugins from '../plugins/_slots/PostAfterPlugins.astro';
+import PostSchemaPlugins from '../plugins/_slots/PostSchemaPlugins.astro';
 
 export async function getStaticPaths() {
   const RESERVED = new Set(['blog', 'sobre', 'contato', 'categoria', 'admin', 'login', 'registrar', 'politica-privacidade', 'termos', 'configuracoes']);
@@ -24,9 +25,21 @@ const authorData = getAuthor(post.data.author);
 function formatDate(date: Date) {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 }
+
+const siteConfig = readData('siteConfig.json', {}) as any;
+const postUrl = `${siteConfig.url || Astro.url.origin}/${post.slug}`;
 ---
 
 <ItechieLayout title={post.data.title}>
+  <PostSchemaPlugins
+    title={post.data.title}
+    description={post.data.description || ''}
+    url={postUrl}
+    image={post.data.heroImage}
+    datePublished={post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}
+    authorName={authorData?.name}
+    category={post.data.category}
+  />
   <Breadcrumb title="Detalhes do Blog" subTitle="Blog Details" />
 
   <div class="blog-area pd-top-120 pd-bottom-120">

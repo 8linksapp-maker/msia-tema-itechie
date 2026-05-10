@@ -1,0 +1,17 @@
+---
+export const prerender = false;
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import ContatoEditor from '../../components/admin/ContatoEditor';
+---
+
+<AdminLayout title="CMS - Contato">
+  <div class="p-6 max-w-7xl mx-auto pb-32">
+    <div class="mb-8 pl-4 border-l-4 border-purple-500">
+      <h1 class="text-3xl font-bold text-slate-800">Página: Contato</h1>
+      <p class="text-slate-500 mt-2">Personalize os dados de atendimento e textos institucionais.</p>
+    </div>
+    <main>
+      <ContatoEditor client:only="react" />
+    </main>
+  </div>
+</AdminLayout>
