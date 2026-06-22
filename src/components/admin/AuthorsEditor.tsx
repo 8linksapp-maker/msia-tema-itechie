@@ -12,6 +12,7 @@ export default function AuthorsEditor() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [tempAuthor, setTempAuthor] = useState<any>(null);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
     useEffect(() => {
         githubApi('read', 'src/data/authors.json')
@@ -46,12 +47,34 @@ export default function AuthorsEditor() {
         }
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onloadend = () => setTempAuthor({ ...tempAuthor, avatar: reader.result as string });
-        reader.readAsDataURL(file);
+        setUploadingAvatar(true);
+        try {
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve((reader.result as string).split(',')[1]);
+                reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+                reader.readAsDataURL(file);
+            });
+
+            const fileName = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase()}`;
+            const path = `public/itechie-assets/img/uploads/${fileName}`;
+
+            await githubApi('write', path, {
+                content: base64,
+                isBase64: true,
+                message: `Upload avatar ${fileName} via CMS`
+            });
+
+            setTempAuthor((prev: any) => ({ ...prev, avatar: `/itechie-assets/img/uploads/${fileName}` }));
+            triggerToast('Upload concluído!', 'success');
+        } catch (err: any) {
+            triggerToast('Erro no upload: ' + err.message, 'error');
+        } finally {
+            setUploadingAvatar(false);
+        }
     };
 
     const saveModalAuthor = async () => {
@@ -168,8 +191,13 @@ export default function AuthorsEditor() {
                         </div>
                         <div className="p-6 overflow-y-auto max-h-[70vh] flex flex-col gap-6">
                             <label className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner bg-slate-100 flex flex-col items-center justify-center mx-auto relative group cursor-pointer">
-                                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                                {tempAuthor.avatar ? (
+                                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingAvatar} />
+                                {uploadingAvatar ? (
+                                    <div className="flex flex-col items-center text-amber-500">
+                                        <Loader2 className="w-8 h-8 animate-spin mb-1" />
+                                        <span className="text-[9px] font-black uppercase tracking-wider">Enviando...</span>
+                                    </div>
+                                ) : tempAuthor.avatar ? (
                                     <>
                                         <img src={tempAuthor.avatar} alt="Avatar" className="absolute inset-0 w-full h-full object-cover group-hover:opacity-40 transition-opacity" />
                                         <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
