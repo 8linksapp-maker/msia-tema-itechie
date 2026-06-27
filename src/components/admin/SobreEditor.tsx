@@ -78,6 +78,10 @@ export default function SobreEditor() {
     const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
     const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
     const subInputClass = "w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500";
+    // Variante SEM w-full: usada nos rows horizontais (flex). Com w-full o input
+    // numerico virava width:100% (w-full vence w-24/w-32 na ordem do CSS gerado)
+    // e colapsava o input irmao flex-1, escondendo o texto sendo editado.
+    const rowInputClass = "bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500";
 
     const setF = (sec: string, key: string, value: any) => setData((d: any) => ({ ...d, [sec]: { ...d[sec], [key]: value } }));
     const setArr = (sec: string, key: string, idx: number, field: string, value: any) => setData((d: any) => {
@@ -139,8 +143,8 @@ export default function SobreEditor() {
                             <div className="space-y-2">
                                 {(data?.about?.skills || []).map((s: any, i: number) => (
                                     <div key={i} className="flex gap-2 items-center">
-                                        <input type="text" placeholder="Nome" value={s.name || ''} onChange={e => setArr('about', 'skills', i, 'name', e.target.value)} className={`${subInputClass} flex-1`} />
-                                        <input type="number" min={0} max={100} placeholder="%" value={s.percentage || 0} onChange={e => setArr('about', 'skills', i, 'percentage', Number(e.target.value))} className={`${subInputClass} w-24`} />
+                                        <input type="text" placeholder="Nome" value={s.name || ''} onChange={e => setArr('about', 'skills', i, 'name', e.target.value)} className={`${rowInputClass} flex-1`} />
+                                        <input type="number" min={0} max={100} placeholder="%" value={s.percentage || 0} onChange={e => setArr('about', 'skills', i, 'percentage', Number(e.target.value))} className={`${rowInputClass} w-24`} />
                                         <button type="button" onClick={() => rmItem('about', 'skills', i)} className="px-2 py-1 text-red-500"><X className="w-4 h-4" /></button>
                                     </div>
                                 ))}
@@ -185,8 +189,8 @@ export default function SobreEditor() {
                             <div className="space-y-2">
                                 {(data?.counter?.stats || []).map((s: any, i: number) => (
                                     <div key={i} className="flex gap-2 items-center">
-                                        <input type="number" placeholder="Numero" value={s.number || 0} onChange={e => setArr('counter', 'stats', i, 'number', Number(e.target.value))} className={`${subInputClass} w-32`} />
-                                        <input type="text" placeholder="Texto" value={s.text || ''} onChange={e => setArr('counter', 'stats', i, 'text', e.target.value)} className={`${subInputClass} flex-1`} />
+                                        <input type="number" placeholder="Numero" value={s.number || 0} onChange={e => setArr('counter', 'stats', i, 'number', Number(e.target.value))} className={`${rowInputClass} w-32`} />
+                                        <input type="text" placeholder="Texto" value={s.text || ''} onChange={e => setArr('counter', 'stats', i, 'text', e.target.value)} className={`${rowInputClass} flex-1`} />
                                         <button type="button" onClick={() => rmItem('counter', 'stats', i)} className="text-red-500"><X className="w-4 h-4" /></button>
                                     </div>
                                 ))}
